@@ -1,6 +1,9 @@
 package project.van.the.phionaremote;
 
+import project.van.the.phionaremote.LearnGesture;
+
 import android.content.DialogInterface;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -41,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Connection request queue
     private static RequestQueue requestQueue;
+    // Gesture detector
+    private GestureDetectorCompat gestureObject;
 
 
     @Override
@@ -48,9 +54,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // swipe right to open navigation drawer
+        gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
+
         // Instantiate the RequestQueue.
         requestQueue = Volley.newRequestQueue(this);
         getLightsState(null);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        this.gestureObject.onTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override
@@ -261,4 +276,10 @@ public class MainActivity extends AppCompatActivity {
         return switchState;
     }
 
+
+
+
 }
+
+
+
