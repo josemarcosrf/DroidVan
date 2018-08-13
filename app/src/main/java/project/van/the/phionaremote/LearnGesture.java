@@ -16,7 +16,7 @@ import static android.support.v4.content.ContextCompat.startActivity;
 class LearnGesture extends GestureDetector.SimpleOnGestureListener {
 
     // Logging Activity tag
-    private static final String TAG = "MainPhionaActivity";
+    private static final String TAG = "PhionaGestureActivity";
 
     // here just to make Toasts...
     private Context context;
@@ -36,14 +36,13 @@ class LearnGesture extends GestureDetector.SimpleOnGestureListener {
         else {
             onOtherSwipe();
         }
-//            return super.onFling(e1, e2, velocityX, velocityY);
         return true;
     }
 
     public void onSwipeRight() {
         Log.d(TAG, "Inside onSwipeRight....");
         Toast.makeText(context, "The good motion detected...", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, NavigationActivity.class);
+        Intent intent = new Intent(context, ManualLightSwitchActivity.class);
 //        context.finish();
         context.startActivity(intent);
     }

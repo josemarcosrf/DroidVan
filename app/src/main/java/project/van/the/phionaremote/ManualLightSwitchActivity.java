@@ -1,20 +1,22 @@
 package project.van.the.phionaremote;
 
-import project.van.the.phionaremote.LearnGesture;
-
-import android.content.DialogInterface;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -32,68 +34,87 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class ManualLightSwitchActivity extends baseLayout{
 
     // Logging Activity tag
     private static final String TAG = "MainPhionaActivity";
 
     // Default connection parameters
-    private static String address = "192.168.1.47";
-    private static String port = "5000";
-    private static String light_endpoint = "/lights";
-    private static String timer_endpoint = "/timer";
+    private static final String light_endpoint = "/lights";
+    private static final String timer_endpoint = "/timer";
 
-    // Connection request queue
-    private static RequestQueue requestQueue;
-    // Gesture detector
-    private GestureDetectorCompat gestureObject;
 
+    private static RequestQueue requestQueue;       // Connection request queue
+    private SharedPreferences sharedPref;
+    private GestureDetectorCompat gestureObject;    // Gesture detector
+
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_light_switches);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Drawer layout
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.manual_lights_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        sharedPref = this.getSharedPreferences(
+                getString(R.string.settings_file_key), Context.MODE_PRIVATE);
 
         // swipe right to open navigation drawer
         gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.manual_lights_nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
         // Instantiate the RequestQueue.
         requestQueue = Volley.newRequestQueue(this);
         getLightsState(null);
+
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.d(TAG, "On NavigationActivity-onTouchEvent...");
         this.gestureObject.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // TODO Auto-generated method stub
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return true;
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO Auto-generated method stub
-        switch (item.getItemId()) {
-            // action when action_search was selected
-            case R.id.ip_setting:
-                //****do something when the action_search item is clicked
-                Toast.makeText(this, "A window should open to set the IP", Toast.LENGTH_SHORT).show();
-                show_ip_dialog();
-                break;
-            default:
-                Toast.makeText(this, "Default option...", Toast.LENGTH_SHORT).show();
-                break;
-        }
-
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // TODO Auto-generated method stub
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.main, menu);
+//        return true;
+//
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//
+//        switch (item.getItemId()) {
+//            // action when action_search was selected
+//            case R.id.ip_setting:
+//                //****do something when the action_search item is clicked
+//                Toast.makeText(this, "A window should open to set the IP", Toast.LENGTH_SHORT).show();
+//                IPDialog diag = new IPDialog(this);
+//                diag.show_ip_dialog();
+//                break;
+//            default:
+//                Toast.makeText(this, "Default option...", Toast.LENGTH_SHORT).show();
+//                break;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     /**
      * Fetches from the server the current lights status via a GET request
@@ -101,7 +122,11 @@ public class MainActivity extends AppCompatActivity {
     public void getLightsState(View view) {
 
         // Build the endpoint
+        String address = getIP();
+        String port = getPort();
         String url = "http://" + address + ":" + port + light_endpoint;
+
+        Log.d(TAG, "Hitting endpoint: " + url);
 
         // build request object
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
@@ -185,50 +210,6 @@ public class MainActivity extends AppCompatActivity {
         sendSwitchLightRequest("l3", switchState);
     }
 
-    private void show_ip_dialog() {
-        // get prompts.xml view
-        LayoutInflater li = LayoutInflater.from(this);
-        View promptsView = li.inflate(R.layout.dialog_set_ip, null);
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        // set dialog_set_ip.xml to alertDialog builder
-        alertDialogBuilder.setView(promptsView);
-
-        final EditText etAddr = (EditText) promptsView
-                .findViewById(R.id.ip_dialog_text);
-
-        final EditText etPort = (EditText) promptsView
-                .findViewById(R.id.port_dialog_text);
-
-        etAddr.setText(address);
-        etPort.setText(port);
-
-        // set dialog message
-        alertDialogBuilder
-                .setTitle(R.string.ip_settings)
-                .setCancelable(false)
-                .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                address = etAddr.getText().toString();
-                                port = etPort.getText().toString();
-                                Log.d(TAG, "IP is =>" + address + ":" + port);
-                            }
-                        })
-                .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-        // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // show it
-        alertDialog.show();
-    }
 
     /**
      * Send a POST request to switch ON / OFF a light controlled by the RaspberryPi Flask server
@@ -238,7 +219,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void sendSwitchLightRequest(String lightName, Boolean switchState) {
         // Build the endpoint
+        String address = getIP();
+        String port = getPort();
         String url = "http://" + address + ":" + port + light_endpoint;
+
+        Log.d(TAG, "Hitting endpoint: " + url);
 
         // Request a JSON response from the provided URL.
         Map map = new HashMap();
@@ -276,7 +261,40 @@ public class MainActivity extends AppCompatActivity {
         return switchState;
     }
 
+    private String getIP() {
+        String ipKey = getResources().getString(R.string.raspvan_ip);
+        String defaultIP = getResources().getString(R.string.sample_ip);
+        String address = sharedPref.getString(ipKey, defaultIP);
+        return address;
+    }
 
+    private String getPort() {
+        String portKey = getResources().getString(R.string.raspvan_port);
+        String defaultPort = getResources().getString(R.string.sample_port);
+        String port = sharedPref.getString(portKey, defaultPort);
+        return port;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        Log.d(TAG, "On onNavigationItemSelected @ ManualLightSwitchActivity...");
+
+        if (id == R.id.light_switches) {
+            Intent intent = new Intent(this, ManualLightSwitchActivity.class);
+//            finish();
+            this.startActivity(intent);
+        } else if (id == R.id.light_timers) {
+            Toast.makeText(this, "Light timers not implemented yet...", Toast.LENGTH_SHORT);
+            Intent intent = new Intent(this, NavigationActivity.class);
+//            finish();
+            this.startActivity(intent);
+        }
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
 
 }
