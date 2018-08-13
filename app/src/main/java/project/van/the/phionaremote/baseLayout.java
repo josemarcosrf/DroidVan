@@ -1,7 +1,6 @@
 package project.van.the.phionaremote;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.MenuInflater;
@@ -24,35 +23,33 @@ public class baseLayout extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_navigation);
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+    protected void onCreateDrawer() {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_timer);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-//        // Floating action button on the right bottom side of the screen
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        // Floating action button on the right bottom side of the screen
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
 
-//        // The actual drawer we were looking for...
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.navigation_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        mDrawerLayout.addDrawerListener(toggle);
-//        toggle.syncState();
-//
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
+        // The actual drawer we were looking for...
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        mDrawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -78,7 +75,6 @@ public class baseLayout extends AppCompatActivity
         switch (item.getItemId()) {
             // action when action_search was selected
             case R.id.ip_setting:
-                Toast.makeText(this, "A window should open to set the IP", Toast.LENGTH_SHORT).show();
                 IPDialog diag = new IPDialog(this);
                 diag.show_ip_dialog();
                 break;
@@ -96,12 +92,13 @@ public class baseLayout extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.light_switches) {
+            Toast.makeText(this, "lightSwitches...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, ManualLightSwitchActivity.class);
 //            finish();
             this.startActivity(intent);
         } else if (id == R.id.light_timers) {
-            Toast.makeText(this, "Light timers not implemented yet...", Toast.LENGTH_SHORT);
-            Intent intent = new Intent(this, NavigationActivity.class);
+            Toast.makeText(this, "Light timers not implemented yet...", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, TimerActivity.class);
 //            finish();
             this.startActivity(intent);
         }

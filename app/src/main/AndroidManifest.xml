@@ -14,19 +14,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
-            android:name=".ManualLightSwitchActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".ManualLightSwitchActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
         </activity>
 
         <!-- Navigation Activity which is the main activity for now -->
         <activity
-            android:name=".NavigationActivity"
+            android:name=".TimerActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

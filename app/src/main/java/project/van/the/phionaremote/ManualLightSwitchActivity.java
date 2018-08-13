@@ -34,10 +34,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ManualLightSwitchActivity extends baseLayout{
+public class ManualLightSwitchActivity extends baseLayout {
 
     // Logging Activity tag
-    private static final String TAG = "MainPhionaActivity";
+    private static final String TAG = "PhionaManualLight";
 
     // Default connection parameters
     private static final String light_endpoint = "/lights";
@@ -54,16 +54,7 @@ public class ManualLightSwitchActivity extends baseLayout{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_light_switches);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // Drawer layout
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.manual_lights_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        super.onCreateDrawer();
 
         sharedPref = this.getSharedPreferences(
                 getString(R.string.settings_file_key), Context.MODE_PRIVATE);
@@ -71,50 +62,17 @@ public class ManualLightSwitchActivity extends baseLayout{
         // swipe right to open navigation drawer
         gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.manual_lights_nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         // Instantiate the RequestQueue.
         requestQueue = Volley.newRequestQueue(this);
         getLightsState(null);
-
-
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d(TAG, "On NavigationActivity-onTouchEvent...");
+        Log.d(TAG, "On ManualLightSwitchActivity-onTouchEvent...");
         this.gestureObject.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // TODO Auto-generated method stub
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main, menu);
-//        return true;
-//
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//        switch (item.getItemId()) {
-//            // action when action_search was selected
-//            case R.id.ip_setting:
-//                //****do something when the action_search item is clicked
-//                Toast.makeText(this, "A window should open to set the IP", Toast.LENGTH_SHORT).show();
-//                IPDialog diag = new IPDialog(this);
-//                diag.show_ip_dialog();
-//                break;
-//            default:
-//                Toast.makeText(this, "Default option...", Toast.LENGTH_SHORT).show();
-//                break;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     /**
      * Fetches from the server the current lights status via a GET request
@@ -274,28 +232,6 @@ public class ManualLightSwitchActivity extends baseLayout{
         String port = sharedPref.getString(portKey, defaultPort);
         return port;
     }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        Log.d(TAG, "On onNavigationItemSelected @ ManualLightSwitchActivity...");
-
-        if (id == R.id.light_switches) {
-            Intent intent = new Intent(this, ManualLightSwitchActivity.class);
-//            finish();
-            this.startActivity(intent);
-        } else if (id == R.id.light_timers) {
-            Toast.makeText(this, "Light timers not implemented yet...", Toast.LENGTH_SHORT);
-            Intent intent = new Intent(this, NavigationActivity.class);
-//            finish();
-            this.startActivity(intent);
-        }
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
 
 }
 
