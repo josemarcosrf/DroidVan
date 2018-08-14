@@ -48,8 +48,6 @@ public class ManualLightSwitchActivity extends baseLayout {
     private SharedPreferences sharedPref;
     private GestureDetectorCompat gestureObject;    // Gesture detector
 
-    private DrawerLayout mDrawerLayout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +68,8 @@ public class ManualLightSwitchActivity extends baseLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         Log.d(TAG, "On ManualLightSwitchActivity-onTouchEvent...");
+        Toast.makeText(this, "On ManualLightSwitchActivity-onTouchEvent...",
+            Toast.LENGTH_SHORT).show();
         this.gestureObject.onTouchEvent(event);
         return super.onTouchEvent(event);
     }

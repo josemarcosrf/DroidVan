@@ -9,20 +9,18 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme.NoActionBar"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
             android:name=".ManualLightSwitchActivity"
+            android:label="@string/title_light_switch"
             android:theme="@style/AppTheme.NoActionBar">
-
         </activity>
 
         <!-- Navigation Activity which is the main activity for now -->
         <activity
             android:name=".TimerActivity"
-            android:label="@string/title_activity_navigation"
+            android:label="@string/title_timer_activity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

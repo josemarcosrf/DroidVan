@@ -24,25 +24,27 @@ public class baseLayout extends AppCompatActivity
 
 
     protected void onCreateDrawer() {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_timer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Floating action button on the right bottom side of the screen
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        // Floating action button on the right bottom side of the screen
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         // The actual drawer we were looking for...
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this,                           /* host Activity */
+                mDrawerLayout,                        /* DrawerLayout  */
+                toolbar,                              /* menu toolbar view */
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
 
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -71,7 +73,6 @@ public class baseLayout extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             // action when action_search was selected
             case R.id.ip_setting:
@@ -82,7 +83,6 @@ public class baseLayout extends AppCompatActivity
                 Toast.makeText(this, "Default option...", Toast.LENGTH_SHORT).show();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -90,6 +90,8 @@ public class baseLayout extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        Toast.makeText(this, "Someone is touching the nav menu ehhh...", Toast.LENGTH_SHORT).show();
 
         if (id == R.id.light_switches) {
             Toast.makeText(this, "lightSwitches...", Toast.LENGTH_SHORT).show();
