@@ -21,8 +21,13 @@
     <string name="read_state_button">Get Light Status</string>
     <string name="title_light_switch">Light Switches</string>
 
-    <!-- LIght Timers -->
+    <!-- Light Timers -->
     <string name="title_timer_activity">Light Timers</string>
+
+    <!-- TimePicker with seconds -->
+    <string name="time_set">Set time</string>
+    <string name="cancel">Cancel</string>
+    <string name="time">Time : </string>
 
     <!-- Navigation Drawer strings-->
     <string name="navigation_drawer_open">Open navigation drawer</string>

@@ -1,6 +1,8 @@
 package project.van.the.phionaremote;
 
 import project.van.the.phionaremote.RaspVanRequests;
+import project.van.the.phionaremote.TimePicker.MyTimePickerDialog;
+import project.van.the.phionaremote.TimePicker.TimePicker;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,14 +18,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class TimerActivity extends BaseLayout {
 
-    private static final String TAG = "PhionaNavActivity";
+    private static final String TAG = "PhionaTimerActivity";
 
     private RaspVanRequests req;
     private Response.Listener<JSONArray> timersListener;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,7 @@ public class TimerActivity extends BaseLayout {
         setContentView(R.layout.activity_timer);
         super.onCreateDrawer();
 
-        Context context = this;
+        context = this;
 
         // RaspVan request class
         req = new RaspVanRequests(this);
@@ -55,10 +59,29 @@ public class TimerActivity extends BaseLayout {
         req.getTimers(timersListener);
     }
 
+    public void showPicker(){
+        Calendar now = Calendar.getInstance();
+        MyTimePickerDialog mTimePicker = new MyTimePickerDialog(this, new MyTimePickerDialog.OnTimeSetListener() {
+
+            @Override
+            public void onTimeSet(TimePicker view, int hours, int minutes, int seconds) {
+                // TODO Auto-generated method stub
+                String timePicked = getString(R.string.time) + String.format("%02d", hours)+
+                        ":" + String.format("%02d", minutes) +
+                        ":" + String.format("%02d", seconds);
+                Log.i(TAG, "Delay " + timePicked);
+                Toast.makeText(context,"Setting: " + timePicked, Toast.LENGTH_SHORT).show();
+                req.setTimerRequest("main", false, hours * 3600 + 60 * minutes + seconds);
+            }
+        }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
+        mTimePicker.show();
+    }
+
     public void defaultTimerForTesting() {
-        Toast.makeText(this,
-                "Sending a timer to switch off in 1o seconds...", Toast.LENGTH_SHORT).show();
-        req.setTimerRequest("main", false, 15);
+//        Toast.makeText(this,
+//                "Sending a timer to switch off in 1o seconds...", Toast.LENGTH_SHORT).show();
+//        req.setTimerRequest("main", false, 15);
+        showPicker();
     }
 
 

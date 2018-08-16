@@ -9,8 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
-import static android.provider.Settings.Global.getString;
-
 
 public class IPDialog {
 
