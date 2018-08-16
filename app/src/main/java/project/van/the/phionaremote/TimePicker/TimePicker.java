@@ -76,7 +76,7 @@ public class TimePicker extends FrameLayout {
     private final NumberPicker mHourPicker;
     private final NumberPicker mMinutePicker;
     private final NumberPicker mSecondPicker;
-    private final Button mAmPmButton;
+//    private final Button mAmPmButton;
     private final String mAmText;
     private final String mPmText;
 
@@ -165,8 +165,8 @@ public class TimePicker extends FrameLayout {
             }
         });
 
-        // am/pm
-        mAmPmButton = (Button) findViewById(R.id.amPm);
+//        // am/pm
+//        mAmPmButton = (Button) findViewById(R.id.amPm);
 
         // now that the hour/minute picker objects have been initialized, set
         // the hour range properly based on the 12/24 hour display mode.
@@ -188,28 +188,28 @@ public class TimePicker extends FrameLayout {
         String[] dfsAmPm = dfs.getAmPmStrings();
         mAmText = dfsAmPm[Calendar.AM];
         mPmText = dfsAmPm[Calendar.PM];
-        mAmPmButton.setText(mIsAm ? mAmText : mPmText);
-        mAmPmButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                requestFocus();
-                if (mIsAm) {
-
-                    // Currently AM switching to PM
-                    if (mCurrentHour < 12) {
-                        mCurrentHour += 12;
-                    }
-                } else {
-
-                    // Currently PM switching to AM
-                    if (mCurrentHour >= 12) {
-                        mCurrentHour -= 12;
-                    }
-                }
-                mIsAm = !mIsAm;
-                mAmPmButton.setText(mIsAm ? mAmText : mPmText);
-                onTimeChanged();
-            }
-        });
+//        mAmPmButton.setText(mIsAm ? mAmText : mPmText);
+//        mAmPmButton.setOnClickListener(new OnClickListener() {
+//            public void onClick(View v) {
+//                requestFocus();
+//                if (mIsAm) {
+//
+//                    // Currently AM switching to PM
+//                    if (mCurrentHour < 12) {
+//                        mCurrentHour += 12;
+//                    }
+//                } else {
+//
+//                    // Currently PM switching to AM
+//                    if (mCurrentHour >= 12) {
+//                        mCurrentHour -= 12;
+//                    }
+//                }
+//                mIsAm = !mIsAm;
+//                mAmPmButton.setText(mIsAm ? mAmText : mPmText);
+//                onTimeChanged();
+//            }
+//        });
 
         if (!isEnabled()) {
             setEnabled(false);
@@ -221,7 +221,7 @@ public class TimePicker extends FrameLayout {
         super.setEnabled(enabled);
         mMinutePicker.setEnabled(enabled);
         mHourPicker.setEnabled(enabled);
-        mAmPmButton.setEnabled(enabled);
+//        mAmPmButton.setEnabled(enabled);
     }
 
     /**
@@ -374,7 +374,7 @@ public class TimePicker extends FrameLayout {
         }
         mHourPicker.setValue(currentHour);
         mIsAm = mCurrentHour < 12;
-        mAmPmButton.setText(mIsAm ? mAmText : mPmText);
+//        mAmPmButton.setText(mIsAm ? mAmText : mPmText);
         onTimeChanged();
     }
 
@@ -383,12 +383,12 @@ public class TimePicker extends FrameLayout {
             mHourPicker.setMinValue(0);
             mHourPicker.setMaxValue(23);
             mHourPicker.setFormatter(TWO_DIGIT_FORMATTER);
-            mAmPmButton.setVisibility(View.GONE);
+//            mAmPmButton.setVisibility(View.GONE);
         } else {
             mHourPicker.setMinValue(1);
             mHourPicker.setMaxValue(12);
             mHourPicker.setFormatter(null);
-            mAmPmButton.setVisibility(View.VISIBLE);
+//            mAmPmButton.setVisibility(View.VISIBLE);
         }
     }
 

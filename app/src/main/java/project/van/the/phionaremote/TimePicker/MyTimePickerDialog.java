@@ -30,6 +30,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import project.van.the.phionaremote.TimePicker.TimePicker.OnTimeChangedListener;
 import project.van.the.phionaremote.R;
@@ -64,6 +65,8 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     private final Calendar mCalendar;
     private final java.text.DateFormat mDateFormat;
 
+    private Context context;
+
     int mInitialHourOfDay;
     int mInitialMinute;
     int mInitialSeconds;
@@ -80,8 +83,9 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
                               OnTimeSetListener callBack,
                               int hourOfDay, int minute, int seconds, boolean is24HourView) {
 
-        this(context, 0,
-                callBack, hourOfDay, minute, seconds, is24HourView);
+//        this(context, 0, callBack, hourOfDay, minute, seconds, is24HourView);
+        this(context, 0, callBack, 0, 0, 15, is24HourView);
+        this.context = context;
     }
 
     /**
@@ -129,6 +133,9 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     public void onClick(DialogInterface dialog, int which) {
         if (mCallback != null) {
             mTimePicker.clearFocus();
+            Toast.makeText(context, "TimePickerOnClick", Toast.LENGTH_SHORT).show();
+
+
             mCallback.onTimeSet(mTimePicker, mTimePicker.getCurrentHour(),
                     mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());
         }

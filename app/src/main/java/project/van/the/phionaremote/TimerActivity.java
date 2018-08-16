@@ -51,8 +51,7 @@ public class TimerActivity extends BaseLayout {
 
         timersListener = response -> {
             Log.d(TAG, response.toString());
-            Toast.makeText(context,
-                    "Timers: " + response.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Timers: " + response.toString(), Toast.LENGTH_SHORT).show();
         };
 
         // check the current lights state to adjust the switches
@@ -61,18 +60,15 @@ public class TimerActivity extends BaseLayout {
 
     public void showPicker(){
         Calendar now = Calendar.getInstance();
-        MyTimePickerDialog mTimePicker = new MyTimePickerDialog(this, new MyTimePickerDialog.OnTimeSetListener() {
-
-            @Override
-            public void onTimeSet(TimePicker view, int hours, int minutes, int seconds) {
-                // TODO Auto-generated method stub
-                String timePicked = getString(R.string.time) + String.format("%02d", hours)+
-                        ":" + String.format("%02d", minutes) +
-                        ":" + String.format("%02d", seconds);
-                Log.i(TAG, "Delay " + timePicked);
-                Toast.makeText(context,"Setting: " + timePicked, Toast.LENGTH_SHORT).show();
-                req.setTimerRequest("main", false, hours * 3600 + 60 * minutes + seconds);
-            }
+        MyTimePickerDialog mTimePicker = new MyTimePickerDialog(this, (view, hours, minutes, seconds) -> {
+            // TODO Auto-generated method stub
+            String timePicked = getString(R.string.time) + String.format("%02d", hours)+
+                    ":" + String.format("%02d", minutes) +
+                    ":" + String.format("%02d", seconds);
+            Log.i(TAG, "Delay " + timePicked);
+            Toast.makeText(context,"Setting: " + timePicked, Toast.LENGTH_SHORT).show();
+            req.setTimerRequest("main", false,
+                    hours * 3600 + 60 * minutes + seconds);
         }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
         mTimePicker.show();
     }
