@@ -1,5 +1,6 @@
 package project.van.the.phionaremote;
 
+import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
@@ -33,13 +34,9 @@ public class ManualLightSwitchActivity extends BaseLayout {
 
         // RaspVan requests utility
         req = new RaspVanRequests(this);
-        lightsListener = new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG, response.toString());
-                updateLightsState(response);
-            }
+        lightsListener = response -> {
+            Log.d(TAG, response.toString());
+            updateLightsState(response);
         };
         // check the current lights state to adjust the switches
         req.getLightsState(lightsListener);
@@ -117,13 +114,6 @@ public class ManualLightSwitchActivity extends BaseLayout {
     private Boolean checkToggleState(String lightName, Switch aSwitch) {
         // check current state of a Switch (true or false).
         final Boolean switchState = aSwitch.isChecked();
-
-        // Switch status logging and display
-        String status = switchState ? "ON" : "OFF";
-        String msg = "Turning the " + lightName + " lights " + status;
-        Log.d(TAG, msg);
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-
         return switchState;
     }
 

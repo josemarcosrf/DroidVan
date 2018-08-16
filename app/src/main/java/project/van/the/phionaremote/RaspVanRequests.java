@@ -2,14 +2,19 @@ package project.van.the.phionaremote;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -55,14 +60,31 @@ public class RaspVanRequests {
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
                 Request.Method.GET,
                 url, null,
-                listener, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(TAG, error.toString());
-            }
-        });
+                listener,
+                error -> Log.e(TAG, error.toString())
+        );
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+    }
+
+    public void getTimers(Response.Listener<JSONArray> listener) {
+
+        // Build the endpoint
+        String address = getIP();
+        String port = getPort();
+        String url = "http://" + address + ":" + port + timer_endpoint;
+
+        Log.d(TAG, "Hitting endpoint: " + url);
+
+        // build request object
+        JsonArrayRequest jsonArrReq = new JsonArrayRequest(
+                Request.Method.GET,
+                url, null,
+                listener,
+                error -> Log.e(TAG, error.toString())
+        );
+        // Add the request to the Queue
+        requestQueue.add(jsonArrReq);
     }
 
     /**
@@ -89,15 +111,59 @@ public class RaspVanRequests {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-
+                        // Switch status logging and display
+                        JSONArray keys = response.names();
+                        for (int i = 0; i < keys.length(); ++i) {
+                            String key = "";
+                            try {
+                                // key is the light name (String), value is a light state string (ON / OFF)
+                                key = keys.getString(i);
+                                String value = response.getString(key);
+                                Toast.makeText(context,
+                                        "Switching light '" + key + "' ==> " + value,
+                                        Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error on switch light (" + key + ") response: " + e);
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context,
+                        "Switch request error: " + error.toString(), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, error.toString());
             }
         });
+        // Add the request to the Queue
+        requestQueue.add(jsonObjReq);
+    }
+
+    public void setTimerRequest(String lightName, Boolean signal, Integer seconds) {
+
+        // Build the endpoint
+        String address = getIP();
+        String port = getPort();
+        String url = "http://" + address + ":" + port + timer_endpoint;
+
+        Log.d(TAG, "Hitting endpoint: " + url);
+
+        // build the JSON body.... so messy! Change this for something better
+        Map map = new HashMap();
+        Map switchMap = new HashMap();
+        switchMap.put("signal", signal);
+        switchMap.put("delay", seconds);
+        map.put(lightName, switchMap);
+        JSONObject body = new JSONObject(map);
+
+        // Request a JSON response from the provided URL.
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(
+                Request.Method.POST,
+                url, body,
+                response -> Log.d(TAG, response.toString()),
+                error -> Log.e(TAG, error.toString())
+        );
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
     }

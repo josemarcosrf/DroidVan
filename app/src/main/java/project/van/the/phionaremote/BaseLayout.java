@@ -81,17 +81,13 @@ public class BaseLayout extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        Toast.makeText(this, "Someone is touching the nav menu ehhh...", Toast.LENGTH_SHORT).show();
-
         if (id == R.id.light_switches) {
-            Toast.makeText(this, "lightSwitches...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, ManualLightSwitchActivity.class);
-//            finish();
+            // finish();
             this.startActivity(intent);
         } else if (id == R.id.light_timers) {
-            Toast.makeText(this, "Light timers not implemented yet...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, TimerActivity.class);
-//            finish();
+            // finish();
             this.startActivity(intent);
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
