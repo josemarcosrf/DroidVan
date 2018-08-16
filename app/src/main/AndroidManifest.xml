@@ -9,21 +9,25 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        android:supportsRtl="true">
+        <activity
+            android:name=".ManualLightSwitchActivity"
+            android:label="@string/title_light_switch"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <!-- Navigation Activity which is the main activity for now -->
+        <!-- Change label once this is not the main activity: '@string/title_timer_activity' -->
+        <activity
+            android:name=".TimerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".NavigationActivity"
-            android:label="@string/title_activity_navigation"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
