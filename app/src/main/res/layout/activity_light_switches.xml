@@ -37,7 +37,7 @@
                 android:layout_marginLeft="124dp"
                 android:layout_marginStart="124dp"
                 android:layout_marginTop="48dp"
-                android:onClick="getLightsState"
+                android:onClick="requestLightState"
                 android:text="@string/read_state_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/l3_switch" />

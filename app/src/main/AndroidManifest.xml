@@ -18,9 +18,10 @@
         </activity>
 
         <!-- Navigation Activity which is the main activity for now -->
+        <!-- Change label once this is not the main activity: '@string/title_timer_activity' -->
         <activity
             android:name=".TimerActivity"
-            android:label="@string/title_timer_activity"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

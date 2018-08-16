@@ -15,7 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class baseLayout extends AppCompatActivity
+public class BaseLayout extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "PhionaBaseActivity";
@@ -26,16 +26,6 @@ public class baseLayout extends AppCompatActivity
     protected void onCreateDrawer() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        // Floating action button on the right bottom side of the screen
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         // The actual drawer we were looking for...
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
