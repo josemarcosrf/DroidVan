@@ -1,18 +1,10 @@
 package project.van.the.phionaremote;
 
-import project.van.the.phionaremote.RaspVanRequests;
 import project.van.the.phionaremote.TimePicker.MyTimePickerDialog;
-import project.van.the.phionaremote.TimePicker.TimePicker;
 
-import android.app.ListActivity;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,7 +14,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,9 +29,6 @@ public class TimerActivity extends BaseLayout {
     private Response.Listener<JSONArray> timersListener;
     private Context context;
 
-    private Toolbar toolbar;
-    private ListView lv;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,38 +37,44 @@ public class TimerActivity extends BaseLayout {
 
         context = this;
 
-        // =============== START of the list view stuff ==============
-        // the list elements
-        final ListView listview = (ListView) findViewById(R.id.timer_listview);
-
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile" };
-
-        final ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < values.length; ++i) {
-            list.add(values[i]);
-        }
-        final StableArrayAdapter adapter = new StableArrayAdapter(this,
-                android.R.layout.simple_list_item_1, list);
-        listview.setAdapter(adapter);
-        // =============== END of the list view stuff ==============
-
-
-        // RaspVan request class
-        req = new RaspVanRequests(this);
-
         // Floating action button on the right bottom side of the screen
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                defaultTimerForTesting();
+                showPicker();
             }
         });
 
+        // On response from Timers Server populate the listView
+        final ListView listview = (ListView) findViewById(R.id.timer_listview);
+
+        // TODO: Change this overriding of the Adapter. Make a non-static adapter
+        // TODO: Change the tipe of list item to just text
+        // TODO: Add onClickListener to each list element
+        // TODO: Each element of the list should dissapear at the exact received datetime
+        // received from the server response
         timersListener = response -> {
             Log.d(TAG, response.toString());
-            Toast.makeText(context, "Timers: " + response.toString(), Toast.LENGTH_SHORT).show();
+
+            ArrayList<String> receivedTimers = new ArrayList<>();
+            for (int i = 0; i < response.length(); i++)
+            {
+                try {
+                    receivedTimers.add(response.get(i).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            Log.d(TAG, "Timers List: " + receivedTimers);
+
+            StableArrayAdapter newAdapter = new StableArrayAdapter(this,
+                    android.R.layout.simple_list_item_1, receivedTimers);
+            listview.setAdapter(newAdapter);
         };
+
+        // RaspVan request class
+        req = new RaspVanRequests(this);
 
         // check the current lights state to adjust the switches
         req.getTimers(timersListener);
@@ -100,33 +95,9 @@ public class TimerActivity extends BaseLayout {
         mTimePicker.show();
     }
 
-    public void defaultTimerForTesting() {
-//        Toast.makeText(this,
-//                "Sending a timer to switch off in 1o seconds...", Toast.LENGTH_SHORT).show();
-//        req.setTimerRequest("main", false, 15);
-        showPicker();
-    }
-
-
-//    @Override
-//    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//        return null;
-//    }
-//
-//    @Override
-//    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//
-//    }
-//
-//    @Override
-//    public void onLoaderReset(Loader<Cursor> loader) {
-//
-//    }
-
-
     private class StableArrayAdapter extends ArrayAdapter<String> {
 
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> mIdMap = new HashMap<>();
 
         public StableArrayAdapter(Context context, int textViewResourceId,
                                   List<String> objects) {
