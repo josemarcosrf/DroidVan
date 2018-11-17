@@ -88,7 +88,7 @@ public class RaspVanRequests {
     }
 
     /**
-     * Send a POST request to switch ON / OFF a light controlled by the RaspberryPi Flask server
+     * Send a POST request to switch ON / OFF a light controlled by the RaspberryPi server
      *
      * @param lightName   (String): one of [main, l1, l2, l3]
      * @param switchState (Boolean): True to switch ON, False to switch OFF
@@ -116,7 +116,8 @@ public class RaspVanRequests {
                         for (int i = 0; i < keys.length(); ++i) {
                             String key = "";
                             try {
-                                // key is the light name (String), value is a light state string (ON / OFF)
+                                // key is the light name (String),
+                                // value is a light state string (ON / OFF)
                                 key = keys.getString(i);
                                 String value = response.getString(key);
                                 Toast.makeText(context,
