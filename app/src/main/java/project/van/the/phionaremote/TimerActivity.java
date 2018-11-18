@@ -6,17 +6,20 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -49,28 +52,15 @@ public class TimerActivity extends BaseLayout {
         // On response from Timers Server populate the listView
         final ListView listview = (ListView) findViewById(R.id.timer_listview);
 
-        // TODO: Change this overriding of the Adapter. Make a non-static adapter
-        // TODO: Change the tipe of list item to just text
+        // TODO: To create everytime the CustomAdapter doesn't sound right... review!
         // TODO: Add onClickListener to each list element
-        // TODO: Each element of the list should dissapear at the exact received datetime
+        // TODO: Each element of the list should disappear at the exact received datetime
         // received from the server response
         timersListener = response -> {
             Log.d(TAG, response.toString());
 
-            ArrayList<String> receivedTimers = new ArrayList<>();
-            for (int i = 0; i < response.length(); i++)
-            {
-                try {
-                    receivedTimers.add(response.get(i).toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            Log.d(TAG, "Timers List: " + receivedTimers);
-
-            StableArrayAdapter newAdapter = new StableArrayAdapter(this,
-                    android.R.layout.simple_list_item_1, receivedTimers);
-            listview.setAdapter(newAdapter);
+            CustomAdapter adapter = new CustomAdapter(this, response);
+            listview.setAdapter(adapter);
         };
 
         // RaspVan request class
@@ -118,6 +108,57 @@ public class TimerActivity extends BaseLayout {
             return true;
         }
 
+    }
+
+    public class CustomAdapter extends BaseAdapter {
+
+        private Context mContext;
+        private JSONArray timers;
+
+        public CustomAdapter(Context context, JSONArray timers) {
+            this.mContext = context;
+            this.timers = timers;
+            Log.d(TAG, "Timers in CustomAdapter: " + timers);
+
+        }
+
+        public int getCount() {
+            // TODO Auto-generated method stub
+            return this.timers.length();
+        }
+
+        public Object getItem(int arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public long getItemId(int position) {
+            // TODO Auto-generated method stub
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.timer_row, parent, false);
+
+            try {
+                JSONArray timer = (JSONArray) this.timers.get(position);
+                String name = timer.get(0).toString();
+                String signal = timer.get(1).toString();
+                String date = timer.get(2).toString();
+                Log.d(TAG, "Timer pos=" + position + ": " + timer);
+
+                ImageView i1 = row.findViewById(R.id.imgIcon);
+                TextView title = row.findViewById(R.id.txtTitle);
+                title.setText(name + " | " + date);
+                if (signal == "ON")
+                    i1.setImageResource(R.drawable.material_bulb);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return (row);
+        }
     }
 
 }
