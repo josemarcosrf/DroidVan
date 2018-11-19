@@ -146,13 +146,17 @@ public class TimerActivity extends BaseLayout {
                 String name = timer.get(0).toString();
                 String signal = timer.get(1).toString();
                 String date = timer.get(2).toString();
+                String day = date.split("T")[0];
+                String hour = date.split("T")[1].split("\\.")[0];
                 Log.d(TAG, "Timer pos=" + position + ": " + timer);
 
                 ImageView i1 = row.findViewById(R.id.imgIcon);
                 TextView title = row.findViewById(R.id.txtTitle);
-                title.setText(name + " | " + date);
-                if (signal == "ON")
-                    i1.setImageResource(R.drawable.material_bulb);
+                title.setText(name + " | " + day + " | " + hour);
+                if (signal.equals("ON"))
+                    i1.setImageResource(R.drawable.bulb_on);
+                else
+                    i1.setImageResource(R.drawable.bulb_off);
 
             } catch (JSONException e) {
                 e.printStackTrace();
