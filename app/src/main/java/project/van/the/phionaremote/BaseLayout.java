@@ -89,6 +89,10 @@ public class BaseLayout extends AppCompatActivity
             Intent intent = new Intent(this, TimerActivity.class);
             // finish();
             this.startActivity(intent);
+        } else if (id == R.id.light_voice_ctl) {
+            Intent intent = new Intent(this, VoiceLightCtlActivity.class);
+            // finish();
+            this.startActivity(intent);
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;

@@ -14,6 +14,14 @@ class Simple(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
+    def do_HEAD(self):
+            self._set_headers()
+
+    def do_POST(self):
+        # Doesn't do anything with posted data
+        self._set_headers()
+        self.wfile.write(json.dumps({"main": "ON"}).encode())
+
     def do_GET(self):
         self._set_headers()
         if self.path == "/timer":
@@ -44,13 +52,7 @@ class Simple(BaseHTTPRequestHandler):
         print(statuses)
         self.wfile.write(json.dumps(statuses).encode())
 
-    def do_HEAD(self):
-        self._set_headers()
 
-    def do_POST(self):
-        # Doesn't do anything with posted data
-        self._set_headers()
-        self.wfile.write(json.dumps({"main": "ON"}).encode())
 
 
 def run(server_class=HTTPServer, handler_class=Simple, port=5000):

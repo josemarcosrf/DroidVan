@@ -12,6 +12,10 @@
             android:id="@+id/light_timers"
             android:icon="@drawable/material_timer"
             android:title="Light timer" />
+        <item
+            android:id="@+id/light_voice_ctl"
+            android:icon="@drawable/material_microphone"
+            android:title="Voice control" />
     </group>
 
     <item android:title="Communicate">
