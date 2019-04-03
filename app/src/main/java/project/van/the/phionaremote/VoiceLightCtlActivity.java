@@ -1,18 +1,18 @@
 package project.van.the.phionaremote;
 
-import android.os.Environment;
-import android.support.v4.view.GestureDetectorCompat;
-import com.android.volley.Response;
-import org.json.JSONObject;
-import android.widget.Toast;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -24,11 +24,7 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import ai.snips.hermes.IntentMessage;
 import ai.snips.platform.SnipsPlatformClient;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
-import kotlin.jvm.functions.Function1;
 
 
 public class VoiceLightCtlActivity extends BaseLayout  {
@@ -50,9 +46,11 @@ public class VoiceLightCtlActivity extends BaseLayout  {
         super.onCreateDrawer();
         gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
 
-        Log.d(TAG, Environment.getExternalStorageDirectory().toString());
-
         assistantLocation = new File(getFilesDir(), "snips");
+
+        Log.d(TAG, "getExternal Storage Directory" + Environment.getExternalStorageDirectory().toString());
+        Log.d(TAG, "Unzipping assistant file at:" + assistantLocation);
+
         extractAssistantIfNeeded(assistantLocation);
         if (ensurePermissions()) {
             startSnips(assistantLocation);
@@ -120,52 +118,41 @@ public class VoiceLightCtlActivity extends BaseLayout  {
                         .enableInjection(false)
                         .build();
 
-        client.setOnPlatformReady(new Function0<Unit>() {
-            @Override
-            public Unit invoke() {
-                Log.d(TAG, "Snips is ready. Say the wake word!");
-                return null;
-            }
+        client.setOnPlatformReady(() -> {
+            Log.d(TAG, "Snips is ready. Say the wake word!");
+            Toast.makeText(getApplicationContext(), "Snips is ready. Say the wake word!", Toast.LENGTH_SHORT).show();
+            return null;
         });
 
         client.setOnPlatformError(
-                new Function1<SnipsPlatformClient.SnipsPlatformError, Unit>() {
-                    @Override
-                    public Unit invoke(final SnipsPlatformClient.SnipsPlatformError
-                                               snipsPlatformError) {
-                        // Handle error
-                        Log.d(TAG, "Error: " + snipsPlatformError.getMessage());
-                        return null;
-                    }
+                snipsPlatformError -> {
+                    // Handle error
+                    Log.d(TAG, "Error: " + snipsPlatformError.getMessage());
+                    return null;
                 });
 
-        client.setOnHotwordDetectedListener(new Function0<Unit>() {
-            @Override
-            public Unit invoke() {
-                // Wake word detected, start a dialog session
-                Log.d(TAG, "Wake word detected!");
-                client.startSession(null, new ArrayList<String>(),
-                        false, null);
-                return null;
-            }
+        client.setOnHotwordDetectedListener(() -> {
+            // Wake word detected, start a dialog session
+            Log.d(TAG, "Wake word detected!");
+            Toast.makeText(getApplicationContext(), "Wake word detected!", Toast.LENGTH_SHORT).show();
+            client.startSession(null, new ArrayList<String>(),
+                    false, null);
+            return null;
         });
 
-        client.setOnIntentDetectedListener(new Function1<IntentMessage, Unit>() {
-            @Override
-            public Unit invoke(final IntentMessage intentMessage) {
-                // Intent detected, so the dialog session ends here
-                client.endSession(intentMessage.getSessionId(), null);
-                Log.d(TAG, "Intent detected: " +
-                        intentMessage.getIntent().getIntentName());
-                return null;
-            }
+        client.setOnIntentDetectedListener(intentMessage -> {
+            // Intent detected, so the dialog session ends here
+            client.endSession(intentMessage.getSessionId(), null);
+            Toast.makeText(getApplicationContext(), "Intent detected: " +
+                    intentMessage.getIntent().getIntentName(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Intent detected: " +
+                    intentMessage.getIntent().getIntentName());
+            return null;
         });
 
-        client.setOnSnipsWatchListener(new Function1<String, Unit>() {
-            public Unit invoke(final String s) {
-                Log.d(TAG, "Log: " + s);
-                return null;
-            }
+        client.setOnSnipsWatchListener(s -> {
+            Log.d(TAG, "Log: " + s);
+            return null;
         });
 
         return client;
