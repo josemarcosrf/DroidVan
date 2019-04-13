@@ -71,21 +71,21 @@ public class TimerActivity extends BaseLayout {
         MyTimePickerDialog mTimePicker;
         mTimePicker = new MyTimePickerDialog(this, (view, signal, light, hours, minutes, seconds) -> {
 
+            String[] light_names = new String[] { "main", "l1", "l2", "l3" };
+
+            // format the received time delay
             String timePicked = getString(R.string.time) +
                     String.format("%02d", hours)+
                     ":" + String.format("%02d", minutes) +
                     ":" + String.format("%02d", seconds);
 
-            Log.i(TAG, "Delay => " + timePicked);
-            Log.i(TAG, "Light signal => " + signal);
-            Log.i(TAG, "Light index => " + light);
-            Toast.makeText(context,"L:" + light +
-                            " Signal:" + signal +
-                            " T:" + timePicked,
-                            Toast.LENGTH_SHORT).show();
+            // Logging
+            Log.i(TAG, "Delay => " + timePicked + " Signal => " + signal + " Light index => " + light);
+            Toast.makeText(context,"Light: " + light + " Signal: " + signal +
+                                       " Delay: " + timePicked, Toast.LENGTH_SHORT).show();
 
-            // TODO: get all parameters to build a proper request
-            req.setTimerRequest("main", false,
+            // send a POST request to the RaspberryPi
+            req.setTimerRequest(light_names[light], signal,
                     hours * 3600 + 60 * minutes + seconds);
         }, now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE),
@@ -93,6 +93,58 @@ public class TimerActivity extends BaseLayout {
                 true);
 
         mTimePicker.show();
+    }
+
+    public class CustomAdapter extends BaseAdapter {
+
+        private Context mContext;
+        private JSONArray timers;
+
+        public CustomAdapter(Context context, JSONArray timers) {
+            this.mContext = context;
+            this.timers = timers;
+            Log.d(TAG, "Timers in CustomAdapter: " + timers);
+
+        }
+
+        public int getCount() {
+            return this.timers.length();
+        }
+
+        public Object getItem(int arg0) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.timer_row, parent, false);
+
+            try {
+                JSONArray timer = (JSONArray) this.timers.get(position);
+                String name = timer.get(0).toString();
+                String signal = timer.get(1).toString();
+                String date = timer.get(2).toString();
+                String day = date.split("T")[0];
+                String hour = date.split("T")[1].split("\\.")[0];
+                Log.d(TAG, "Timer pos=" + position + ": " + timer);
+
+                ImageView i1 = row.findViewById(R.id.imgIcon);
+                TextView title = row.findViewById(R.id.txtTitle);
+                title.setText(name + " => " + hour);
+                if (signal.equals("ON"))
+                    i1.setImageResource(R.drawable.bulb_on);
+                else
+                    i1.setImageResource(R.drawable.bulb_off);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return (row);
+        }
     }
 
     private class StableArrayAdapter extends ArrayAdapter<String> {
@@ -118,61 +170,6 @@ public class TimerActivity extends BaseLayout {
             return true;
         }
 
-    }
-
-    public class CustomAdapter extends BaseAdapter {
-
-        private Context mContext;
-        private JSONArray timers;
-
-        public CustomAdapter(Context context, JSONArray timers) {
-            this.mContext = context;
-            this.timers = timers;
-            Log.d(TAG, "Timers in CustomAdapter: " + timers);
-
-        }
-
-        public int getCount() {
-            // TODO Auto-generated method stub
-            return this.timers.length();
-        }
-
-        public Object getItem(int arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public long getItemId(int position) {
-            // TODO Auto-generated method stub
-            return position;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = getLayoutInflater();
-            View row = inflater.inflate(R.layout.timer_row, parent, false);
-
-            try {
-                JSONArray timer = (JSONArray) this.timers.get(position);
-                String name = timer.get(0).toString();
-                String signal = timer.get(1).toString();
-                String date = timer.get(2).toString();
-                String day = date.split("T")[0];
-                String hour = date.split("T")[1].split("\\.")[0];
-                Log.d(TAG, "Timer pos=" + position + ": " + timer);
-
-                ImageView i1 = row.findViewById(R.id.imgIcon);
-                TextView title = row.findViewById(R.id.txtTitle);
-                title.setText(name + " | " + day + " | " + hour);
-                if (signal.equals("ON"))
-                    i1.setImageResource(R.drawable.bulb_on);
-                else
-                    i1.setImageResource(R.drawable.bulb_off);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return (row);
-        }
     }
 
 }

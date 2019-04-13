@@ -123,7 +123,7 @@ public class TimePicker extends FrameLayout {
         mLightPicker = findViewById(R.id.light_picker);
         mLightPicker.setMinValue(0);
         mLightPicker.setMaxValue(3);
-        mLightPicker.setDisplayedValues( new String[] { "Main", "L1", "L2", "L3" } ); // hardcoded for now
+        mLightPicker.setDisplayedValues( new String[] { "main", "l1", "l2", "l3" } ); // hardcoded for now
         mLightPicker.setOnValueChangedListener((spinner, oldVal, newVal) -> {
             mCurrentLight = newVal;
             onTimeChanged();
