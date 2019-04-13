@@ -41,18 +41,13 @@ public class TimerActivity extends BaseLayout {
         context = this;
 
         // Floating action button on the right bottom side of the screen
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPicker();
-            }
-        });
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> showPicker());
 
         // On response from Timers Server populate the listView
-        final ListView listview = (ListView) findViewById(R.id.timer_listview);
+        final ListView listview = findViewById(R.id.timer_listview);
 
-        // TODO: To create everytime the CustomAdapter doesn't sound right... review!
+        // TODO: To create every time the CustomAdapter doesn't sound right... review!
         // TODO: Add onClickListener to each list element
         // TODO: Each element of the list should disappear at the exact received datetime
         // received from the server response
@@ -72,16 +67,31 @@ public class TimerActivity extends BaseLayout {
 
     public void showPicker(){
         Calendar now = Calendar.getInstance();
-        MyTimePickerDialog mTimePicker = new MyTimePickerDialog(this, (view, hours, minutes, seconds) -> {
-            // TODO Auto-generated method stub
-            String timePicked = getString(R.string.time) + String.format("%02d", hours)+
+        // Create timePicker dialogue and pass a callback function (as a lambda function)
+        MyTimePickerDialog mTimePicker;
+        mTimePicker = new MyTimePickerDialog(this, (view, signal, light, hours, minutes, seconds) -> {
+
+            String timePicked = getString(R.string.time) +
+                    String.format("%02d", hours)+
                     ":" + String.format("%02d", minutes) +
                     ":" + String.format("%02d", seconds);
-            Log.i(TAG, "Delay " + timePicked);
-            Toast.makeText(context,"Setting: " + timePicked, Toast.LENGTH_SHORT).show();
+
+            Log.i(TAG, "Delay => " + timePicked);
+            Log.i(TAG, "Light signal => " + signal);
+            Log.i(TAG, "Light index => " + light);
+            Toast.makeText(context,"L:" + light +
+                            " Signal:" + signal +
+                            " T:" + timePicked,
+                            Toast.LENGTH_SHORT).show();
+
+            // TODO: get all parameters to build a proper request
             req.setTimerRequest("main", false,
                     hours * 3600 + 60 * minutes + seconds);
-        }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND), true);
+        }, now.get(Calendar.HOUR_OF_DAY),
+                now.get(Calendar.MINUTE),
+                now.get(Calendar.SECOND),
+                true);
+
         mTimePicker.show();
     }
 

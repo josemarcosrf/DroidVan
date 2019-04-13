@@ -120,7 +120,7 @@ public class VoiceLightCtlActivity extends BaseLayout  {
 
         client.setOnPlatformReady(() -> {
             Log.d(TAG, "Snips is ready. Say the wake word!");
-            Toast.makeText(getApplicationContext(), "Snips is ready. Say the wake word!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Snips is ready. Say 'Chapie'!", Toast.LENGTH_SHORT).show();
             return null;
         });
 
@@ -135,13 +135,14 @@ public class VoiceLightCtlActivity extends BaseLayout  {
             // Wake word detected, start a dialog session
             Log.d(TAG, "Wake word detected!");
             Toast.makeText(getApplicationContext(), "Wake word detected!", Toast.LENGTH_SHORT).show();
-            client.startSession(null, new ArrayList<String>(),
+            client.startSession(null, new ArrayList<>(),
                     false, null);
             return null;
         });
 
         client.setOnIntentDetectedListener(intentMessage -> {
             // Intent detected, so the dialog session ends here
+            // Log.d(TAG, "intent message: " + intentMessage);
             client.endSession(intentMessage.getSessionId(), null);
             Toast.makeText(getApplicationContext(), "Intent detected: " +
                     intentMessage.getIntent().getIntentName(), Toast.LENGTH_SHORT).show();

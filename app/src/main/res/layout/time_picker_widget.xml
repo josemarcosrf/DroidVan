@@ -32,6 +32,14 @@
         android:layoutDirection="ltr"
         android:orientation="horizontal">
 
+        <!-- lights -->
+        <NumberPicker
+            android:id="@+id/light_picker"
+            android:layout_width="70dip"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
         <!-- hour -->
         <NumberPicker
             android:id="@+id/hour"
