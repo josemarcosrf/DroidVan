@@ -26,6 +26,12 @@ class LearnGesture extends GestureDetector.SimpleOnGestureListener {
     }
 
     @Override
+    public boolean onDown(MotionEvent event) {
+        Log.d(TAG,"onDown: " + event.toString());
+        return true;
+    }
+
+    @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
         Log.d(TAG, "Inside onFling.....  e2: " + e2.getX() + " e1: " +  e1.getX());

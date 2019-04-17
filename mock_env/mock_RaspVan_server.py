@@ -79,7 +79,7 @@ class Simple(BaseHTTPRequestHandler):
         print("Light switch payload: {}".format(payload))
         LIGHT_STATUS.update(payload)
         print("Updating light status: {}".format(LIGHT_STATUS))
-        self.wfile.write(json.dumps(LIGHT_STATUS).encode())
+        self.wfile.write(json.dumps(payload).encode())
 
     def _get_light_status(self):
         print("Serving light status: {}".format(LIGHT_STATUS))

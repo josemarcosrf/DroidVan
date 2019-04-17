@@ -1,12 +1,9 @@
 package project.van.the.phionaremote;
 
-import android.content.BroadcastReceiver;
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 
@@ -18,10 +15,9 @@ public class ManualLightSwitchActivity extends BaseLayout {
 
     // Logging Activity tag
     private static final String TAG = "PhionaManualLight";
-    private GestureDetectorCompat gestureObject;    // Gesture detector
+//    private GestureDetectorCompat gestureObject;    // Gesture detector
     private RaspVanRequests req;
     private Response.Listener<JSONObject> lightsListener;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +26,7 @@ public class ManualLightSwitchActivity extends BaseLayout {
         super.onCreateDrawer();
 
         // swipe right to open navigation drawer
-        gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
+//        gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
 
         // RaspVan requests utility
         req = new RaspVanRequests(this);
@@ -38,6 +34,12 @@ public class ManualLightSwitchActivity extends BaseLayout {
             Log.d(TAG, response.toString());
             updateLightsState(response);
         };
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
         // check the current lights state to adjust the switches
         req.getLightsState(lightsListener);
     }
@@ -116,16 +118,6 @@ public class ManualLightSwitchActivity extends BaseLayout {
         final Boolean switchState = aSwitch.isChecked();
         return switchState;
     }
-
-    //    @Override
-    //    public boolean onTouchEvent(MotionEvent event) {
-    //        Log.d(TAG, "On ManualLightSwitchActivity-onTouchEvent...");
-    //        Toast.makeText(this, "On ManualLightSwitchActivity-onTouchEvent...",
-    //            Toast.LENGTH_SHORT).show();
-    //        this.gestureObject.onTouchEvent(event);
-    //        return super.onTouchEvent(event);
-    //    }
-
 }
 
 

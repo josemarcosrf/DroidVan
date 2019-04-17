@@ -1,10 +1,6 @@
 package project.van.the.phionaremote;
 
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.MenuInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,24 +8,27 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class BaseLayout extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class BaseLayout extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "PhionaBaseActivity";
 
     private DrawerLayout mDrawerLayout;
 
+    ActionBarDrawerToggle toggle;
+
 
     protected void onCreateDrawer() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // The actual drawer we were looking for...
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        toggle = new ActionBarDrawerToggle(
                 this,                           /* host Activity */
                 mDrawerLayout,                        /* DrawerLayout  */
                 toolbar,                              /* menu toolbar view */
@@ -39,7 +38,7 @@ public class BaseLayout extends AppCompatActivity
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -79,21 +78,36 @@ public class BaseLayout extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        Intent intent;
+        switch (item.getItemId()) {
+            // Instead of creating new Activities we bring them to from if they exists
+            // with the 'FLAG_ACTIVITY_REORDER_TO_FRONT' flag
+            // https://stackoverflow.com/questions/15359124/resume-the-activity-instead-of-starting-if-already-exists-in-back-stack
 
-        if (id == R.id.light_switches) {
-            Intent intent = new Intent(this, ManualLightSwitchActivity.class);
-            // finish();
-            this.startActivity(intent);
-        } else if (id == R.id.light_timers) {
-            Intent intent = new Intent(this, TimerActivity.class);
-            // finish();
-            this.startActivity(intent);
-        } else if (id == R.id.light_voice_ctl) {
-            Intent intent = new Intent(this, VoiceLightCtlActivity.class);
-            // finish();
-            this.startActivity(intent);
+            case R.id.light_switches:
+                intent = new Intent(this, ManualLightSwitchActivity.class);
+//                finish();
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                this.startActivity(intent);
+                break;
+            case R.id.light_timers:
+                intent = new Intent(this, TimerActivity.class);
+//                finish();
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                this.startActivity(intent);
+                break;
+            case R.id.light_voice_ctl:
+                intent = new Intent(this, VoiceLightCtlActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                finish();
+                this.startActivity(intent);
+                break;
+            default:
+                Toast.makeText(this, "Default Navigation Item...", Toast.LENGTH_SHORT).show();
+                break;
         }
+
+
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }

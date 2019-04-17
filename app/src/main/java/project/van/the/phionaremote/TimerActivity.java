@@ -60,7 +60,11 @@ public class TimerActivity extends BaseLayout {
 
         // RaspVan request class
         lightsServer = new RaspVanRequests(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         // Get timers response to the listener queue
         lightsServer.getTimers(timersListener);
     }
