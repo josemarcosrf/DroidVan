@@ -115,7 +115,7 @@ public class RaspVanRequests {
                         String key = "";
                         try {
                             // key is the light name (String),
-                            // value is a light state string (ON / OFF)
+                            // value is a light state (boolean)
                             key = keys.getString(i);
                             String value = response.getString(key);
                             Toast.makeText(context,

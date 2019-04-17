@@ -28,12 +28,15 @@ public class TimerActivity extends BaseLayout {
 
     private static final String TAG = "PhionaTimerActivity";
 
-    private RaspVanRequests req;
+    private RaspVanRequests lightsServer;
     private Response.Listener<JSONArray> timersListener;
     private Context context;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Create drawer and main view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
         super.onCreateDrawer();
@@ -44,25 +47,22 @@ public class TimerActivity extends BaseLayout {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> showPicker());
 
-        // On response from Timers Server populate the listView
-        final ListView listview = findViewById(R.id.timer_listview);
-
+        // On response from Timer-Server populate the listView
         // TODO: To create every time the CustomAdapter doesn't sound right... review!
         // TODO: Add onClickListener to each list element
-        // TODO: Each element of the list should disappear at the exact received datetime
-        // received from the server response
+        // TODO: Each element of the list should disappear at the exact received datetime received from the server response
+        listView = findViewById(R.id.timer_listview);
         timersListener = response -> {
-            Log.d(TAG, response.toString());
-
+            Log.d(TAG, "LightServer response => " + response.toString());
             CustomAdapter adapter = new CustomAdapter(this, response);
-            listview.setAdapter(adapter);
+            listView.setAdapter(adapter);
         };
 
         // RaspVan request class
-        req = new RaspVanRequests(this);
+        lightsServer = new RaspVanRequests(this);
 
-        // check the current lights state to adjust the switches
-        req.getTimers(timersListener);
+        // Get timers response to the listener queue
+        lightsServer.getTimers(timersListener);
     }
 
     public void showPicker(){
@@ -70,7 +70,12 @@ public class TimerActivity extends BaseLayout {
         // Create timePicker dialogue and pass a callback function (as a lambda function)
         MyTimePickerDialog mTimePicker;
         mTimePicker = new MyTimePickerDialog(this, (view, signal, light, hours, minutes, seconds) -> {
-
+            /*
+              TimePicker Listener:
+               - Format the received data,
+               - Make a REST API call to the Lights server,
+               - Add response to the ListAdapter
+             */
             String[] light_names = new String[] { "main", "l1", "l2", "l3" };
 
             // format the received time delay
@@ -85,8 +90,12 @@ public class TimerActivity extends BaseLayout {
                                        " Delay: " + timePicked, Toast.LENGTH_SHORT).show();
 
             // send a POST request to the RaspberryPi
-            req.setTimerRequest(light_names[light], signal,
+            lightsServer.setTimerRequest(light_names[light], signal,
                     hours * 3600 + 60 * minutes + seconds);
+
+            // Update timers list
+            lightsServer.getTimers(timersListener);
+
         }, now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE),
                 now.get(Calendar.SECOND),
@@ -125,8 +134,12 @@ public class TimerActivity extends BaseLayout {
 
             try {
                 JSONArray timer = (JSONArray) this.timers.get(position);
+
+                // Light name and status
                 String name = timer.get(0).toString();
-                String signal = timer.get(1).toString();
+                Boolean signal = timer.getBoolean(1);
+
+                // parse the date
                 String date = timer.get(2).toString();
                 String day = date.split("T")[0];
                 String hour = date.split("T")[1].split("\\.")[0];
@@ -135,7 +148,7 @@ public class TimerActivity extends BaseLayout {
                 ImageView i1 = row.findViewById(R.id.imgIcon);
                 TextView title = row.findViewById(R.id.txtTitle);
                 title.setText(name + " => " + hour);
-                if (signal.equals("ON"))
+                if (signal)
                     i1.setImageResource(R.drawable.bulb_on);
                 else
                     i1.setImageResource(R.drawable.bulb_off);

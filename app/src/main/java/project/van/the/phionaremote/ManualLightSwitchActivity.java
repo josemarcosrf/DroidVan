@@ -52,16 +52,16 @@ public class ManualLightSwitchActivity extends BaseLayout {
         for (int i = 0; i < keys.length(); ++i) {
             String key = "N/D";
             try {
-                // key is the light name (String), value is a light state string (ON / OFF)
+                // key is the light name (String), value is a light state (Boolean)
                 key = keys.getString(i);
-                String value = response.getString(key);
+                Boolean value = response.getBoolean(key);
 
-                Log.d(TAG, key + " ==> " + value + " | " + (value.equals("ON") ? true : false));
+                Log.d(TAG, key + " ==> " + value + " | " + (value? "ON" : "OFF"));
 
                 // Move the switches accordingly
                 int resID = getResources().getIdentifier(key + "_switch", "id", getPackageName());
                 Switch aSwitch = (Switch) findViewById(resID);
-                aSwitch.setChecked(value.equals("ON") ? true : false);
+                aSwitch.setChecked(value);
 
             } catch (Exception e) {
                 Log.e(TAG, "Error on reading light (" + key + ") status: " + e);
@@ -75,7 +75,7 @@ public class ManualLightSwitchActivity extends BaseLayout {
      */
     public void switchMainLights(View view) {
         // Get the switch
-        Switch aSwitch = (Switch) findViewById(R.id.main_switch);
+        Switch aSwitch = findViewById(R.id.main_switch);
         Boolean switchState = checkToggleState("main", aSwitch);
         req.sendSwitchLightRequest("main", switchState);
     }
@@ -85,7 +85,7 @@ public class ManualLightSwitchActivity extends BaseLayout {
      */
     public void switchL1Lights(View view) {
         // Get the switch
-        Switch aSwitch = (Switch) findViewById(R.id.l1_switch);
+        Switch aSwitch = findViewById(R.id.l1_switch);
         Boolean switchState = checkToggleState("L1", aSwitch);
         req.sendSwitchLightRequest("l1", switchState);
     }
@@ -95,7 +95,7 @@ public class ManualLightSwitchActivity extends BaseLayout {
      */
     public void switchL2Lights(View view) {
         // Get the switch
-        Switch aSwitch = (Switch) findViewById(R.id.l2_switch);
+        Switch aSwitch = findViewById(R.id.l2_switch);
         Boolean switchState = checkToggleState("L2", aSwitch);
         req.sendSwitchLightRequest("l2", switchState);
     }
@@ -105,7 +105,7 @@ public class ManualLightSwitchActivity extends BaseLayout {
      */
     public void switchL3Lights(View view) {
         // Get the switch
-        Switch aSwitch = (Switch) findViewById(R.id.l3_switch);
+        Switch aSwitch = findViewById(R.id.l3_switch);
         Boolean switchState = checkToggleState("L3", aSwitch);
         req.sendSwitchLightRequest("l3", switchState);
     }
