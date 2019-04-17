@@ -27,9 +27,11 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import project.van.the.phionaremote.TimePicker.TimePicker.OnTimeChangedListener;
 import project.van.the.phionaremote.R;
@@ -47,12 +49,19 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     public interface OnTimeSetListener {
 
         /**
+         * @param signal The ON or OFF state to change the light to
+         * @param light The index of the light to change
          * @param view The view associated with this listener.
          * @param hourOfDay The hour that was set.
          * @param minute The minute that was set.
          */
-        void onTimeSet(TimePicker view, int hourOfDay, int minute, int seconds);
+        void onTimeSet(TimePicker view,
+                       boolean signal, int light,
+                       int hourOfDay, int minute, int seconds);
     }
+
+    // logging TAG
+    private static final String TAG = "PhionaTimePickerDialog";
 
     private static final String HOUR = "hour";
     private static final String MINUTE = "minute";
@@ -63,6 +72,8 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     private final OnTimeSetListener mCallback;
     private final Calendar mCalendar;
     private final java.text.DateFormat mDateFormat;
+
+    private Context context;
 
     int mInitialHourOfDay;
     int mInitialMinute;
@@ -80,8 +91,8 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
                               OnTimeSetListener callBack,
                               int hourOfDay, int minute, int seconds, boolean is24HourView) {
 
-        this(context, 0,
-                callBack, hourOfDay, minute, seconds, is24HourView);
+        this(context, 0, callBack, 0, 0, 15, is24HourView);
+        this.context = context;
     }
 
     /**
@@ -108,15 +119,16 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
         mCalendar = Calendar.getInstance();
         updateTitle(mInitialHourOfDay, mInitialMinute, mInitialSeconds);
 
-        setButton(context.getText(R.string.time_set), this);
-        setButton2(context.getText(R.string.cancel), (OnClickListener) null);
-        //setIcon(android.R.drawable.ic_dialog_time);
+        // Buttons of the widget
+        setButton(DialogInterface.BUTTON_POSITIVE, context.getText(R.string.set_on), this);
+        setButton(DialogInterface.BUTTON_NEGATIVE, context.getText(R.string.set_off), this);
+        setButton(DialogInterface.BUTTON_NEUTRAL, context.getText(R.string.cancel), (OnClickListener) null);
 
         LayoutInflater inflater =
                 (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.time_picker_dialog, null);
         setView(view);
-        mTimePicker = (TimePicker) view.findViewById(R.id.timePicker);
+        mTimePicker = view.findViewById(R.id.timePicker);
 
         // initialize state
         mTimePicker.setCurrentHour(mInitialHourOfDay);
@@ -129,12 +141,23 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     public void onClick(DialogInterface dialog, int which) {
         if (mCallback != null) {
             mTimePicker.clearFocus();
-            mCallback.onTimeSet(mTimePicker, mTimePicker.getCurrentHour(),
-                    mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());
+
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                mCallback.onTimeSet(mTimePicker, true,
+                        mTimePicker.getCurrentLight(), mTimePicker.getCurrentHour(),
+                        mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());
+            }
+            else if (which == DialogInterface.BUTTON_NEGATIVE){
+                mCallback.onTimeSet(mTimePicker, false,
+                        mTimePicker.getCurrentLight(), mTimePicker.getCurrentHour(),
+                        mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());
+            } else {
+                Log.d(TAG, "Doing nothing on TimePickerOnClick...");
+            }
         }
     }
 
-    public void onTimeChanged(TimePicker view, int hourOfDay, int minute, int seconds) {
+    public void onTimeChanged(TimePicker view, int light, int hourOfDay, int minute, int seconds) {
         updateTitle(hourOfDay, minute, seconds);
     }
 

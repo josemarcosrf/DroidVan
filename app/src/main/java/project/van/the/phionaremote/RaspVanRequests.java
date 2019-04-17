@@ -30,11 +30,11 @@ public class RaspVanRequests {
     private static RequestQueue requestQueue;       // Connection request queue
     private SharedPreferences sharedPref;
     private Context context;
-    private String settingsName;
+
 
     public RaspVanRequests(Context context) {
         this.context = context;
-        this.settingsName = context.getResources().getString(R.string.settings_file_key);
+        String settingsName = context.getResources().getString(R.string.settings_file_key);
 
         // Shared Preferences where to store app settings (IP, port, ...)
         sharedPref = context.getSharedPreferences(
@@ -88,7 +88,7 @@ public class RaspVanRequests {
     }
 
     /**
-     * Send a POST request to switch ON / OFF a light controlled by the RaspberryPi Flask server
+     * Send a POST request to switch ON / OFF a light controlled by the RaspberryPi server
      *
      * @param lightName   (String): one of [main, l1, l2, l3]
      * @param switchState (Boolean): True to switch ON, False to switch OFF
@@ -108,34 +108,29 @@ public class RaspVanRequests {
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(
                 Request.Method.POST,
                 url, body,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // Switch status logging and display
-                        JSONArray keys = response.names();
-                        for (int i = 0; i < keys.length(); ++i) {
-                            String key = "";
-                            try {
-                                // key is the light name (String), value is a light state string (ON / OFF)
-                                key = keys.getString(i);
-                                String value = response.getString(key);
-                                Toast.makeText(context,
-                                        "Switching light '" + key + "' ==> " + value,
-                                        Toast.LENGTH_SHORT).show();
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error on switch light (" + key + ") response: " + e);
-                                e.printStackTrace();
-                            }
+                response -> {
+                    // Switch status logging and display
+                    JSONArray keys = response.names();
+                    for (int i = 0; i < keys.length(); ++i) {
+                        String key = "";
+                        try {
+                            // key is the light name (String),
+                            // value is a light state (boolean)
+                            key = keys.getString(i);
+                            String value = response.getString(key);
+                            Toast.makeText(context,
+                                    "Switching light '" + key + "' ==> " + value,
+                                    Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error on switch light (" + key + ") response: " + e);
+                            e.printStackTrace();
                         }
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context,
-                        "Switch request error: " + error.toString(), Toast.LENGTH_SHORT).show();
-                Log.e(TAG, error.toString());
-            }
-        });
+                }, error -> {
+                    Toast.makeText(context,
+                            "Switch request error: " + error.toString(), Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, error.toString());
+                });
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
     }

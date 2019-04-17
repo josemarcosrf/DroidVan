@@ -4,6 +4,7 @@
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <!-- Application -->
     <application
@@ -11,22 +12,28 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
+
+        <!-- Navigation Activity which is the main activity for now -->
         <activity
             android:name=".ManualLightSwitchActivity"
             android:label="@string/title_light_switch"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-
-        <!-- Navigation Activity which is the main activity for now -->
-        <!-- Change label once this is not the main activity: '@string/title_timer_activity' -->
-        <activity
-            android:name=".TimerActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".VoiceLightCtlActivity"
+            android:label="@string/title_voice_ctl"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".TimerActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

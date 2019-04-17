@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "project.van.the.phionaremote"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -21,6 +21,11 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+    repositories {
+        maven {
+            url "https://nexus-repository.snips.ai/repository/snips-maven-releases/"
+        }
+    }
 }
 
 dependencies {
@@ -34,4 +39,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // Snips dependencies
+    implementation('ai.snips:snips-platform-android:0.61.1@aar') {
+        transitive = true
+    }
 }

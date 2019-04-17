@@ -17,14 +17,68 @@
 ** limitations under the License.
 */
 -->
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal">
-    <project.van.the.phionaremote.TimePicker.TimePicker
-        android:id="@+id/timePicker"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
-</LinearLayout>
+<android.widget.RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+
+        <!--&lt;!&ndash;Light switches&ndash;&gt;-->
+        <!--android:layout_width="102dp"-->
+        <!--android:layout_height="182dp"-->
+        <!--android:orientation="vertical">-->
+
+
+        <!--<Switch-->
+            <!--android:id="@+id/switchMain"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Main"-->
+            <!--android:textAlignment="viewStart" />-->
+
+
+        <!--<Switch-->
+            <!--android:id="@+id/switchL1"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="L1" />-->
+
+        <!--<Switch-->
+            <!--android:id="@+id/switchL2"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="L2" />-->
+
+        <!--<Switch-->
+            <!--android:id="@+id/switchL3"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignEnd="@+id/switchL2"-->
+            <!--android:layout_marginEnd="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="L3" />-->
+
+
+        <!--time picker widget -->
+        <project.van.the.phionaremote.TimePicker.TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp">
+
+        </project.van.the.phionaremote.TimePicker.TimePicker>
+
+
+</android.widget.RelativeLayout>

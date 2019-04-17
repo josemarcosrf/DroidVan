@@ -14,7 +14,7 @@
     <string name="raspvan_port">raspvan_port</string>
 
     <!-- Manual Light Switches -->
-    <string name="main_light">main_light</string>
+    <string name="main_light">main light</string>
     <string name="light_1">light 1</string>
     <string name="light_2">light 2</string>
     <string name="light_3">light 3</string>
@@ -25,7 +25,8 @@
     <string name="title_timer_activity">Light Timers</string>
 
     <!-- TimePicker with seconds -->
-    <string name="time_set">Set time</string>
+    <string name="set_on">Switch ON</string>
+    <string name="set_off">Switch OFF</string>
     <string name="cancel">Cancel</string>
     <string name="time">Time : </string>
 
@@ -36,4 +37,5 @@
     <string name="nav_header_subtitle">jose.marcos.rf@gmail.com</string>
     <string name="nav_header_desc">Domotic Panels</string>
     <string name="action_settings">Settings</string>
+    <string name="title_voice_ctl">Voice Control</string>
 </resources>
