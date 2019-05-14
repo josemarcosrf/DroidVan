@@ -1,21 +1,29 @@
 package project.van.the.phionaremote;
 
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 
 public class WebControlPanelActivity extends BaseLayout {
 
     private static final String TAG = "PhionaWebControlPanel";
-    private static final String LOCAL_RESOURCE = "file:///android_asset/html/HelloWorld.html";
 
     private SharedPreferences sharedPref;
     private Context context;
+    private Activity activity;
+
+    private WebView wv;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,18 +32,21 @@ public class WebControlPanelActivity extends BaseLayout {
         super.onCreateDrawer();
 
         context = this;
+        activity = this;
 
         // Shared Preferences where to store app settings (IP, port, ...)
         sharedPref = context.getSharedPreferences(
                 context.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
 
-        String urlToLoad = getIP() + "/GumCP/index.php";
+        String urlToLoad = "http://" + getIP() + "/GumCP/index.php";
+        // Toast.makeText(this, "url: " + urlToLoad, Toast.LENGTH_LONG).show();
 
-        WebView wv = findViewById(R.id.web_control_panel_view);
+        wv = findViewById(R.id.web_control_panel_view);
         wv.setWebViewClient(new CustomWebViewClient());
         wv.getSettings().setJavaScriptEnabled(true);
+        wv.canGoBack();
 
-        this.loadResource(wv, "https:google.com");
+        this.loadResource(wv, urlToLoad);
 
     }
 
@@ -56,6 +67,35 @@ public class WebControlPanelActivity extends BaseLayout {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
+        }
+
+        public void onLoadResource(WebView view, String url) {
+            // Check to see if there is a progress dialog
+            if (progressDialog == null) {
+                // If no progress dialog, make one and set message
+                progressDialog = new ProgressDialog(activity);
+                progressDialog.setMessage("Loading please wait...");
+                progressDialog.show();
+
+                // Hide the webview while loading
+                wv.setEnabled(false);
+            }
+        }
+
+        public void onPageFinished(WebView view, String url) {
+            // Page is done loading;
+            // hide the progress dialog and show the webview
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+                progressDialog = null;
+                wv.setEnabled(true);
+            }
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
+            //Your code to do
+            Toast.makeText(activity, "Your Internet Connection May not be active Or " + error , Toast.LENGTH_LONG).show();
         }
     }
 }
