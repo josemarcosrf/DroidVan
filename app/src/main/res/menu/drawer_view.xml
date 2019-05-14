@@ -16,6 +16,14 @@
             android:id="@+id/light_voice_ctl"
             android:icon="@drawable/material_microphone"
             android:title="Voice control" />
+        <item
+            android:id="@+id/web_control_pannel"
+            android:icon="@drawable/control_panel"
+            android:title="Web control panel" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/gear"
+            android:title="Settings" />
     </group>
 
     <item android:title="Communicate">

@@ -5,6 +5,7 @@
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- Application -->
     <application
@@ -16,7 +17,7 @@
         <!-- Navigation Activity which is the main activity for now -->
         <activity
             android:name=".ManualLightSwitchActivity"
-            android:label="@string/title_light_switch"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,9 +33,16 @@
 
         <activity
             android:name=".TimerActivity"
-            android:label="@string/app_name"
+            android:label="@string/title_timer_activity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
+        <activity
+            android:name=".WebControlPanelActivity"
+            android:label="@string/title_web_control_panel"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
     </application>
 
 </manifest>

@@ -102,6 +102,14 @@ public class BaseLayout extends AppCompatActivity implements
 //                finish();
                 this.startActivity(intent);
                 break;
+            case R.id.web_control_pannel:
+                intent = new Intent(this, WebControlPanelActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                this.startActivity(intent);
+                break;
+            case R.id.settings:
+                Toast.makeText(this, "No settings yet my friend. Ouch!", Toast.LENGTH_SHORT).show();
+                break;
             default:
                 Toast.makeText(this, "Default Navigation Item...", Toast.LENGTH_SHORT).show();
                 break;

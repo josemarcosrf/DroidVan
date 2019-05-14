@@ -32,10 +32,10 @@ public class IPDialog {
         // set dialog_set_ip.xml to alertDialog builder
         alertDialogBuilder.setView(promptsView);
 
-        final EditText etAddr = (EditText) promptsView
+        final EditText etAddr = promptsView
                 .findViewById(R.id.ip_dialog_text);
 
-        final EditText etPort = (EditText) promptsView
+        final EditText etPort = promptsView
                 .findViewById(R.id.port_dialog_text);
 
         String address = this.getAddress();
@@ -49,21 +49,15 @@ public class IPDialog {
                 .setTitle(R.string.ip_settings)
                 .setCancelable(false)
                 .setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                String address = etAddr.getText().toString();
-                                String port = etPort.getText().toString();
-                                setAddress(address);
-                                setPort(port);
-                                Log.d(TAG, "IP is =>" + address + ":" + port);
-                            }
+                        (dialog, id) -> {
+                            String address1 = etAddr.getText().toString();
+                            String port1 = etPort.getText().toString();
+                            setAddress(address1);
+                            setPort(port1);
+                            Log.d(TAG, "IP is =>" + address1 + ":" + port1);
                         })
                 .setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        });
+                        (dialog, id) -> dialog.cancel());
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();

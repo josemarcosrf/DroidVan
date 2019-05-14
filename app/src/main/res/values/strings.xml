@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">PhionaRemote</string>
+    <string name="app_name">FionaRemote</string>
 
     <!-- App Settings -->
     <string name="ip_settings">set Raspberry IP</string>
-    <string name="sample_ip">192.168.1.42</string>
+    <string name="sample_ip">192.168.50.5</string>
     <string name="sample_port">5000</string>
     <string name="ip_confirm">confirm</string>
     <string name="ip_cancel">cancel</string>
@@ -38,4 +38,8 @@
     <string name="nav_header_desc">Domotic Panels</string>
     <string name="action_settings">Settings</string>
     <string name="title_voice_ctl">Voice Control</string>
+
+    <!-- Web Control Panel-->
+    <string name="title_web_control_panel">Web Control Panel</string>
+
 </resources>

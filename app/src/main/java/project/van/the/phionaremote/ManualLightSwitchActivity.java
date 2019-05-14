@@ -15,18 +15,15 @@ public class ManualLightSwitchActivity extends BaseLayout {
 
     // Logging Activity tag
     private static final String TAG = "PhionaManualLight";
-//    private GestureDetectorCompat gestureObject;    // Gesture detector
     private RaspVanRequests req;
     private Response.Listener<JSONObject> lightsListener;
+    //    private GestureDetectorCompat gestureObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_light_switches);
         super.onCreateDrawer();
-
-        // swipe right to open navigation drawer
-//        gestureObject = new GestureDetectorCompat(this, new LearnGesture(this));
 
         // RaspVan requests utility
         req = new RaspVanRequests(this);
@@ -62,7 +59,7 @@ public class ManualLightSwitchActivity extends BaseLayout {
 
                 // Move the switches accordingly
                 int resID = getResources().getIdentifier(key + "_switch", "id", getPackageName());
-                Switch aSwitch = (Switch) findViewById(resID);
+                Switch aSwitch = findViewById(resID);
                 aSwitch.setChecked(value);
 
             } catch (Exception e) {
