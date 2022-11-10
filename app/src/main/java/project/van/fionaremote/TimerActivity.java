@@ -1,6 +1,6 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
-import project.van.the.phionaremote.TimePicker.MyTimePickerDialog;
+import project.van.fionaremote.TimePicker.MyTimePickerDialog;
 
 import android.content.Context;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("project.van.the.phionaremote", appContext.getPackageName());
+        assertEquals("project.van.fionaremote", appContext.getPackageName());
     }
 }

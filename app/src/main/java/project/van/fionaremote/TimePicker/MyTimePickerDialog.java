@@ -1,4 +1,4 @@
-package project.van.the.phionaremote.TimePicker;
+package project.van.fionaremote.TimePicker;
 
 
 
@@ -31,16 +31,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 
-import project.van.the.phionaremote.TimePicker.TimePicker.OnTimeChangedListener;
-import project.van.the.phionaremote.R;
+import project.van.fionaremote.R;
 
 /**
  * A dialog that prompts the user for the time of day using a {@link TimePicker}.
  */
 public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
-        OnTimeChangedListener {
+        TimePicker.OnTimeChangedListener {
 
     /**
      * The callback interface used to indicate the user is done filling in

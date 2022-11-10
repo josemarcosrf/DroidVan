@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 import android.content.Intent;
 import android.support.design.widget.NavigationView;

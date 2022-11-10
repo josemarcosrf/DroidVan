@@ -7,7 +7,7 @@
     <string name="sample_port">5000</string>
     <string name="ip_confirm">confirm</string>
     <string name="ip_cancel">cancel</string>
-    <string name="settings_file_key">project.van.the.phionaremote_settings</string>
+    <string name="settings_file_key">project.van.fionaremote_settings</string>
 
     <!-- String keys for network parameters -->
     <string name="raspvan_ip">raspvan_ip</string>

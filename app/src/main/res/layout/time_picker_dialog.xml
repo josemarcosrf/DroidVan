@@ -64,7 +64,7 @@
 
 
         <!--time picker widget -->
-        <project.van.the.phionaremote.TimePicker.TimePicker
+        <project.van.fionaremote.TimePicker.TimePicker
             android:id="@+id/timePicker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
             android:layout_marginEnd="0dp"
             android:layout_marginRight="0dp">
 
-        </project.van.the.phionaremote.TimePicker.TimePicker>
+        </project.van.fionaremote.TimePicker.TimePicker>
 
 
 </android.widget.RelativeLayout>

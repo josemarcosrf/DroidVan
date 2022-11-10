@@ -1,4 +1,4 @@
-package project.van.the.phionaremote.TimePicker;
+package project.van.fionaremote.TimePicker;
 
 /*
  * Copyright (C) 2007 The Android Open Source Project
@@ -29,7 +29,7 @@ import android.widget.NumberPicker;
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
 
-import project.van.the.phionaremote.R;
+import project.van.fionaremote.R;
 
 /**
  * A view for selecting the time of day, in either 24 hour or AM/PM mode.

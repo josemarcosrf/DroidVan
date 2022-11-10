@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 
 import android.app.Activity;
@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;

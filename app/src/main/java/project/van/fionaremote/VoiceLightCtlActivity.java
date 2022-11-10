@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ai.snips.platform.SnipsPlatformClient;
+import project.van.fionaremote.BuildConfig;
 
 
 public class VoiceLightCtlActivity extends BaseLayout  {
