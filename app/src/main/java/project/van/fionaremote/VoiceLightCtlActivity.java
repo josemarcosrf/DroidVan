@@ -25,7 +25,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import ai.snips.platform.SnipsPlatformClient;
-import project.van.fionaremote.BuildConfig;
 
 
 public class VoiceLightCtlActivity extends BaseLayout  {
@@ -33,7 +32,7 @@ public class VoiceLightCtlActivity extends BaseLayout  {
     // Logging Activity tag
     private static final String TAG = "FionaVoiceLightCtl";
     private GestureDetectorCompat gestureObject;    // Gesture detector
-    private RaspVanRequests req;
+    private HTTPClient req;
     private Response.Listener<JSONObject> lightsListener;
 
     private File assistantLocation;

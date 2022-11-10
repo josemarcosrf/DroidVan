@@ -3,24 +3,17 @@ package project.van.fionaremote;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+public class HTTPClient {
 
-public class RaspVanRequests {
-
-    private static final String TAG = "FionaRaspVan";
+    private static final String TAG = "FionaRequests";
 
     // Default connection parameters
     private static final String light_endpoint = "/lights";
@@ -30,7 +23,7 @@ public class RaspVanRequests {
     private Context context;
 
 
-    public RaspVanRequests(Context context) {
+    public HTTPClient(Context context) {
         this.context = context;
         String settingsName = context.getResources().getString(R.string.settings_file_key);
 

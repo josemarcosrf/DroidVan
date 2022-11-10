@@ -26,6 +26,7 @@ android {
             url "https://nexus-repository.snips.ai/repository/snips-maven-releases/"
         }
     }
+    namespace 'project.van.fionaremote'
 }
 
 dependencies {

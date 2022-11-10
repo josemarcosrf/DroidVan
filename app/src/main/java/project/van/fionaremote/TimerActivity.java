@@ -28,7 +28,7 @@ public class TimerActivity extends BaseLayout {
 
     private static final String TAG = "FionaTimerActivity";
 
-    private RaspVanRequests lightsServer;
+    private HTTPClient lightsServer;
     private Response.Listener<JSONArray> timersListener;
     private Context context;
     private ListView listView;
@@ -59,7 +59,7 @@ public class TimerActivity extends BaseLayout {
         };
 
         // RaspVan request class
-        lightsServer = new RaspVanRequests(this);
+        lightsServer = new HTTPClient(this);
     }
 
     @Override

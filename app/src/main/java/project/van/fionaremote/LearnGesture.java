@@ -46,7 +46,7 @@ class LearnGesture extends GestureDetector.SimpleOnGestureListener {
     public void onSwipeRight() {
         Log.d(TAG, "Inside onSwipeRight....");
         Toast.makeText(context, "The good motion detected...", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, ManualLightSwitchActivity.class);
+        Intent intent = new Intent(context, LightSwitchActivity.class);
 //        context.finish();
         context.startActivity(intent);
     }

@@ -85,7 +85,7 @@ public class BaseLayout extends AppCompatActivity implements
             // https://stackoverflow.com/questions/15359124/resume-the-activity-instead-of-starting-if-already-exists-in-back-stack
 
             case R.id.light_switches:
-                intent = new Intent(this, ManualLightSwitchActivity.class);
+                intent = new Intent(this, LightSwitchActivity.class);
                 // finish();
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
