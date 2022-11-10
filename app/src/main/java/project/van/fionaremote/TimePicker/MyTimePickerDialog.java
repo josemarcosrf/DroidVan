@@ -59,7 +59,7 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     }
 
     // logging TAG
-    private static final String TAG = "PhionaTimePickerDialog";
+    private static final String TAG = "FionaTimePickerDialog";
 
     private static final String HOUR = "hour";
     private static final String MINUTE = "minute";

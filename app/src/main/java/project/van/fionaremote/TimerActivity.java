@@ -26,7 +26,7 @@ import java.util.List;
 
 public class TimerActivity extends BaseLayout {
 
-    private static final String TAG = "PhionaTimerActivity";
+    private static final String TAG = "FionaTimerActivity";
 
     private RaspVanRequests lightsServer;
     private Response.Listener<JSONArray> timersListener;

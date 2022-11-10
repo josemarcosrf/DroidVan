@@ -14,7 +14,7 @@ import org.json.JSONObject;
 public class ManualLightSwitchActivity extends BaseLayout {
 
     // Logging Activity tag
-    private static final String TAG = "PhionaManualLight";
+    private static final String TAG = "FionaManualLight";
     private RaspVanRequests req;
     private Response.Listener<JSONObject> lightsListener;
     //    private GestureDetectorCompat gestureObject;

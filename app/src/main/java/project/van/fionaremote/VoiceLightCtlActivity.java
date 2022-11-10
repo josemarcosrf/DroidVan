@@ -31,7 +31,7 @@ import project.van.fionaremote.BuildConfig;
 public class VoiceLightCtlActivity extends BaseLayout  {
 
     // Logging Activity tag
-    private static final String TAG = "PhionaVoiceLightCtl";
+    private static final String TAG = "FionaVoiceLightCtl";
     private GestureDetectorCompat gestureObject;    // Gesture detector
     private RaspVanRequests req;
     private Response.Listener<JSONObject> lightsListener;

@@ -64,7 +64,7 @@ public class TimePicker extends FrameLayout {
             };
 
     // logging TAG
-    private static final String TAG = "PhionaTimePicker";
+    private static final String TAG = "FionaTimePicker";
 
     // state
     private int mCurrentHour = 0; // 0-23

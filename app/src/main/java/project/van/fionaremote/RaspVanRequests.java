@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class RaspVanRequests {
 
-    private static final String TAG = "PhionaRaspVan";
+    private static final String TAG = "FionaRaspVan";
 
     // Default connection parameters
     private static final String light_endpoint = "/lights";
@@ -47,6 +47,9 @@ public class RaspVanRequests {
      */
     public void getLightsState(Response.Listener<JSONObject> listener) {
 
+        Log.d(TAG, "'getLightsState' not implemented yet!");
+
+        /*
         // Build the endpoint
         String address = getIP();
         String port = getPort();
@@ -63,10 +66,14 @@ public class RaspVanRequests {
         );
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+        */
     }
 
     public void getTimers(Response.Listener<JSONArray> listener) {
 
+        Log.d(TAG, "'getTimers' not implemented yet!");
+
+        /*
         // Build the endpoint
         String address = getIP();
         String port = getPort();
@@ -83,6 +90,7 @@ public class RaspVanRequests {
         );
         // Add the request to the Queue
         requestQueue.add(jsonArrReq);
+        */
     }
 
     /**
@@ -92,6 +100,10 @@ public class RaspVanRequests {
      * @param switchState (Boolean): True to switch ON, False to switch OFF
      */
     public void sendSwitchLightRequest(String lightName, Boolean switchState) {
+
+        Log.d(TAG, "'sendSwitchLightRequest' not implemented yet!");
+
+        /*
         // Build the endpoint
         String address = getIP();
         String port = getPort();
@@ -131,13 +143,15 @@ public class RaspVanRequests {
                 });
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+        */
     }
 
     public void setTimerRequest(String lightName, Boolean signal, Integer seconds) {
 
+        Log.d(TAG, "'setTimerRequest' not implemented yet!");
+        /*
         // Build the endpoint
         String address = getIP();
-        String port = getPort();
         String url = "http://" + address + ":" + port + timer_endpoint;
 
         Log.d(TAG, "Hitting endpoint: " + url);
@@ -159,19 +173,13 @@ public class RaspVanRequests {
         );
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+        */
     }
 
-    private String getIP() {
-        String ipKey = context.getResources().getString(R.string.raspvan_ip);
-        String defaultIP = context.getResources().getString(R.string.sample_ip);
-        String address = sharedPref.getString(ipKey, defaultIP);
+    private String getRPIServerUUID() {
+        String BtKey = context.getResources().getString(R.string.rpi_bt_uuid);
+        String BtServerUUID = context.getResources().getString(R.string.sample_uuid);
+        String address = sharedPref.getString(BtKey, BtServerUUID);
         return address;
-    }
-
-    private String getPort() {
-        String portKey = context.getResources().getString(R.string.raspvan_port);
-        String defaultPort = context.getResources().getString(R.string.sample_port);
-        String port = sharedPref.getString(portKey, defaultPort);
-        return port;
     }
 }

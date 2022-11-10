@@ -2,16 +2,14 @@
     <string name="app_name">FionaRemote</string>
 
     <!-- App Settings -->
-    <string name="ip_settings">set Raspberry IP</string>
-    <string name="sample_ip">192.168.50.5</string>
-    <string name="sample_port">5000</string>
-    <string name="ip_confirm">confirm</string>
-    <string name="ip_cancel">cancel</string>
+    <string name="conn_rpi_settings">Raspberry Bluetooth server settings</string>
+    <string name="sample_uuid">616d3aa1-689e-4e71-8fed-09f3c7c4ad91</string>
+    <string name="id_confirm">confirm</string>
+    <string name="id_cancel">cancel</string>
     <string name="settings_file_key">project.van.fionaremote_settings</string>
 
     <!-- String keys for network parameters -->
-    <string name="raspvan_ip">raspvan_ip</string>
-    <string name="raspvan_port">raspvan_port</string>
+    <string name="rpi_bt_uuid">rpi_bt_uuid</string>
 
     <!-- Manual Light Switches -->
     <string name="main_light">main light</string>
@@ -33,7 +31,7 @@
     <!-- Navigation Drawer strings-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">PhionaRemote</string>
+    <string name="nav_header_title">FionaRemote</string>
     <string name="nav_header_subtitle">jose.marcos.rf@gmail.com</string>
     <string name="nav_header_desc">Domotic Panels</string>
     <string name="action_settings">Settings</string>

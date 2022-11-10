@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 public class WebControlPanelActivity extends BaseLayout {
 
-    private static final String TAG = "PhionaWebControlPanel";
+    private static final String TAG = "FionaWebControlPanel";
 
     private SharedPreferences sharedPref;
     private Context context;
@@ -55,9 +55,9 @@ public class WebControlPanelActivity extends BaseLayout {
     }
 
     private String getIP() {
-        String ipKey = this.context.getResources().getString(R.string.raspvan_ip);
-        String defaultIP = this.context.getResources().getString(R.string.sample_ip);
-        String address = this.sharedPref.getString(ipKey, defaultIP);
+        String btKey = this.context.getResources().getString(R.string.rpi_bt_uuid);
+        String defaultUUID = this.context.getResources().getString(R.string.sample_uuid);
+        String address = this.sharedPref.getString(btKey, defaultUUID);
         return address;
     }
 

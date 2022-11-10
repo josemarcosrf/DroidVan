@@ -15,7 +15,7 @@ import android.widget.Toast;
 public class BaseLayout extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "PhionaBaseActivity";
+    private static final String TAG = "FionaBaseActivity";
 
     private DrawerLayout mDrawerLayout;
 
@@ -65,8 +65,8 @@ public class BaseLayout extends AppCompatActivity implements
         switch (item.getItemId()) {
             // action when action_search was selected
             case R.id.ip_setting:
-                IPDialog diag = new IPDialog(this);
-                diag.show_ip_dialog();
+                ConnectionDialog diag = new ConnectionDialog(this);
+                diag.showConnectionDialog();
                 break;
             default:
                 Toast.makeText(this, "Default option...", Toast.LENGTH_SHORT).show();
@@ -86,27 +86,27 @@ public class BaseLayout extends AppCompatActivity implements
 
             case R.id.light_switches:
                 intent = new Intent(this, ManualLightSwitchActivity.class);
-//                finish();
+                // finish();
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
                 break;
             case R.id.light_timers:
                 intent = new Intent(this, TimerActivity.class);
-//                finish();
+                // finish();
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
                 break;
-            case R.id.light_voice_ctl:
+            /*case R.id.light_voice_ctl:
                 intent = new Intent(this, VoiceLightCtlActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                finish();
+                // finish();
                 this.startActivity(intent);
-                break;
-            case R.id.web_control_pannel:
+                break;*/
+            /*case R.id.web_control_pannel:
                 intent = new Intent(this, WebControlPanelActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
-                break;
+                break;*/
             case R.id.settings:
                 Toast.makeText(this, "No settings yet my friend. Ouch!", Toast.LENGTH_SHORT).show();
                 break;

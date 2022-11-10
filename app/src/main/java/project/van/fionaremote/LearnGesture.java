@@ -14,7 +14,7 @@ import android.widget.Toast;
 class LearnGesture extends GestureDetector.SimpleOnGestureListener {
 
     // Logging Activity tag
-    private static final String TAG = "PhionaGestureActivity";
+    private static final String TAG = "FionaGestureActivity";
 
     // here just to make Toasts...
     private Context context;
