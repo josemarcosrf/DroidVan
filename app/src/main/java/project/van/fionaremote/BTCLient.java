@@ -15,8 +15,7 @@ import java.util.UUID;
 
 public class BTCLient extends Thread {
 
-    // TODO: Handle recoonections
-    // TODO:
+    // TODO: Handle reconnections
 
     private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     private BluetoothSocket btSocket;
@@ -26,13 +25,12 @@ public class BTCLient extends Thread {
     private final SharedPreferences sharedPref;
     private final Context context;
 
-
     public BTCLient(Context context, BluetoothDevice device) {
         // Shared Preferences where to store app settings (IP, port, ...)
         this.context = context;
+        this.btDevice = device;
         sharedPref = context.getSharedPreferences(
                 context.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
-
 
         Log.d(TAG, "BT Client init function");
         try {
@@ -40,6 +38,13 @@ public class BTCLient extends Thread {
         } catch (IOException ioe) {
             Log.e(TAG, "Error: " + ioe);
         }
+    }
+
+    private String getRPIServerUUID() {
+        String BtKey = context.getResources().getString(R.string.rpi_bt_uuid);
+        String BtServerUUID = context.getResources().getString(R.string.sample_uuid);
+        String address = sharedPref.getString(BtKey, BtServerUUID);
+        return address;
     }
 
     private void ConnectThread(BluetoothDevice device) throws IOException {
@@ -88,8 +93,6 @@ public class BTCLient extends Thread {
     public void send(String msg) throws IOException {
         OutputStream mmOutputStream = btSocket.getOutputStream();
         mmOutputStream.write(msg.getBytes());
-        String r = receive();
-        Log.i(TAG, "Result: " + r);
     }
 
     public String receive() throws IOException {
@@ -104,15 +107,16 @@ public class BTCLient extends Thread {
             // btSocket.close();
             return readMessage;
         } catch (IOException e) {
-            Log.e(TAG, "Problems occurred!");
+            Log.e(TAG, "Problems reading from socket: " + e);
             return "";
         }
     }
 
-    private String getRPIServerUUID() {
-        String BtKey = context.getResources().getString(R.string.rpi_bt_uuid);
-        String BtServerUUID = context.getResources().getString(R.string.sample_uuid);
-        String address = sharedPref.getString(BtKey, BtServerUUID);
-        return address;
+    public void close() {
+        try {
+            btSocket.close();
+        } catch (IOException e) {
+            Log.w(TAG, "BT Socket is already closed");
+        }
     }
 }

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 
@@ -19,10 +21,16 @@ import java.util.Set;
 
 public class LightSwitchActivity extends BaseLayout {
 
+    // TODO: Handle continous attempts to reconnect (every x seconds)
+    // TODO: Connect and send / receive with in a separate thread with callbacks or similar
+    // TODO: Become aware of server disconnection
+    // TODO: Handle Bluetooth Enabling intent
+
     // Logging Activity tag
     private static final String TAG = "FionaManualLight";
     private HTTPClient req;
     private BTCLient btClient = null;
+    private TextView connMsg = null;
     private Response.Listener<JSONObject> lightsListener;
     //    private GestureDetectorCompat gestureObject;
 
@@ -34,6 +42,8 @@ public class LightSwitchActivity extends BaseLayout {
         setContentView(R.layout.activity_light_switches);
         super.onCreateDrawer();
 
+        connMsg = (TextView) findViewById(R.id.bt_connection_text);
+        connMsg.setVisibility(View.VISIBLE);
         this.checkBT();
 
         // HTTP Client to RPI server
@@ -55,18 +65,25 @@ public class LightSwitchActivity extends BaseLayout {
         req.getLightsState(lightsListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
+        btClient.close();
+        super.onDestroy();
+    }
+
     private void checkBT() {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (btAdapter == null) {
-            // Device doesn't support Bluetooth
+            Toast.makeText(this, "Device doesn't support Bluetooth :(", Toast.LENGTH_SHORT).show();
         }
         if (!btAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-
         if (btClient != null) {
+            // TODO: Check connectivity instead of the instance not being null
             return;
         }
 
@@ -82,7 +99,9 @@ public class LightSwitchActivity extends BaseLayout {
                 // TODO: Define RPI name in Resources
                 if (deviceName.equals("raspberrypi")) {
                     Log.i(TAG, "Found raspberrypi!!!! Trying to connect!");
+                    Toast.makeText(this, "Connecting to " + deviceName, Toast.LENGTH_SHORT).show();
                     btClient = new BTCLient(this, device);
+//                    connMsg.setVisibility(View.INVISIBLE);
                     break;
                 }
             }
@@ -132,8 +151,13 @@ public class LightSwitchActivity extends BaseLayout {
             String mode = switchState ? "1" : "0";
             // TODO: Handle proper JSON payloads
             btClient.send("{\"cmd\": \"switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}");
+            String lightState = btClient.receive();
+            Log.e(TAG, "Light state: " + lightState);
+            // TODO: Update switches accordingly
         } catch (IOException ioe) {
-            Log.e(TAG, "Error sending light switch command to RPI: " + ioe);
+            String msg = "Error sending light switch command to RPI: " + ioe;
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, msg);
         }
     }
 

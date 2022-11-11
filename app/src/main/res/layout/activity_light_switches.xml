@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:scaleType="centerCrop">
-        <!--android:background="@drawable/fiona_alps_bg"-->
+        android:scaleType="centerCrop" >
+        <!-- android:background="@drawable/fiona_alps_bg" -->
 
         <!-- The ActionBar displayed at the top -->
         <include
@@ -47,21 +47,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/l3_switch" />
 
-            <Switch
-                android:id="@+id/l1_switch"
-                android:layout_width="250dp"
-                android:layout_height="33dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="28dp"
-                android:layout_marginEnd="8dp"
-                android:onClick="switchL1Lights"
-                android:text="@string/light_1"
+            <TextView
+                android:id="@+id/bt_connection_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Connecting to RPI via BT"
+                tools:visibility="visible"
+                android:textColor="#AF1717"
+                app:layout_constraintBottom_toTopOf="@+id/fetch_state_button"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.371"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/main_switch" />
+                app:layout_constraintTop_toBottomOf="@+id/l3_switch"
+                app:layout_constraintVertical_bias="0.5"
+                />
 
             <Switch
                 android:id="@+id/l2_switch"
@@ -110,6 +109,22 @@
                 app:layout_constraintHorizontal_bias="0.369"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <Switch
+                android:id="@+id/l1_switch"
+                android:layout_width="250dp"
+                android:layout_height="33dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="28dp"
+                android:layout_marginEnd="8dp"
+                android:onClick="switchL1Lights"
+                android:text="@string/light_1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.371"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/main_switch" />
 
 
         </android.support.constraint.ConstraintLayout>
