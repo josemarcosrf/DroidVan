@@ -16,11 +16,9 @@ public class BaseLayout extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "FionaBaseActivity";
-
     private DrawerLayout mDrawerLayout;
 
     ActionBarDrawerToggle toggle;
-
 
     protected void onCreateDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -57,7 +55,6 @@ public class BaseLayout extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return true;
-
     }
 
     @Override

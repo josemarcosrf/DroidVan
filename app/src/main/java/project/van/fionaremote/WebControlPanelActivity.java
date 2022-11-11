@@ -61,7 +61,7 @@ public class WebControlPanelActivity extends BaseLayout {
         return address;
     }
 
-    private class CustomWebViewClient extends WebViewClient{
+    private class CustomWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
@@ -92,9 +92,9 @@ public class WebControlPanelActivity extends BaseLayout {
         }
 
         @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             //Your code to do
-            Toast.makeText(activity, "Your Internet Connection May not be active Or " + error , Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Your Internet Connection May not be active Or " + error, Toast.LENGTH_LONG).show();
         }
     }
 }

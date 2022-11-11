@@ -33,19 +33,19 @@ import project.van.fionaremote.R;
 
 /**
  * A view for selecting the time of day, in either 24 hour or AM/PM mode.
- *
+ * <p>
  * The hour, each minute digit, each seconds digit, and AM/PM (if applicable) can be conrolled by
  * vertical spinners.
- *
+ * <p>
  * The hour can be entered by keyboard input.  Entering in two digit hours
  * can be accomplished by hitting two digits within a timeout of about a
  * second (e.g. '1' then '2' to select 12).
- *
+ * <p>
  * The minutes can be entered by entering single digits.
  * The seconds can be entered by entering single digits.
- *
+ * <p>
  * Under AM/PM mode, the user can hit 'a', 'A", 'p' or 'P' to pick.
- *
+ * <p>
  * For a dialog using this view, see {@link android.app.TimePickerDialog}.
  */
 public class TimePicker extends FrameLayout {
@@ -55,7 +55,8 @@ public class TimePicker extends FrameLayout {
      * later in the code.
      */
     private static final OnTimeChangedListener NO_OP_CHANGE_LISTENER =
-            (view, light, hourOfDay, minute, seconds) -> {};
+            (view, light, hourOfDay, minute, seconds) -> {
+            };
 
     public static final NumberPicker.Formatter TWO_DIGIT_FORMATTER =
             value -> {
@@ -92,11 +93,11 @@ public class TimePicker extends FrameLayout {
     public interface OnTimeChangedListener {
 
         /**
-         * @param view The view associated with this listener.
+         * @param view      The view associated with this listener.
          * @param hourOfDay The current hour.
          * @param hourOfDay The current hour.
-         * @param minute The current minute.
-         * @param seconds The current second.
+         * @param minute    The current minute.
+         * @param seconds   The current second.
          */
         void onTimeChanged(TimePicker view, int light, int hourOfDay, int minute, int seconds);
     }
@@ -123,7 +124,7 @@ public class TimePicker extends FrameLayout {
         mLightPicker = findViewById(R.id.light_picker);
         mLightPicker.setMinValue(0);
         mLightPicker.setMaxValue(3);
-        mLightPicker.setDisplayedValues( new String[] { "main", "l1", "l2", "l3" } ); // hardcoded for now
+        mLightPicker.setDisplayedValues(new String[]{"main", "l1", "l2", "l3"}); // hardcoded for now
         mLightPicker.setOnValueChangedListener((spinner, oldVal, newVal) -> {
             mCurrentLight = newVal;
             onTimeChanged();
@@ -162,7 +163,7 @@ public class TimePicker extends FrameLayout {
         mSecondPicker = findViewById(R.id.seconds);
         mSecondPicker.setMinValue(0);
         mSecondPicker.setMaxValue(59);
-        mSecondPicker.setFormatter( TWO_DIGIT_FORMATTER);
+        mSecondPicker.setFormatter(TWO_DIGIT_FORMATTER);
         mSecondPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             mCurrentSeconds = newVal;
             onTimeChanged();
@@ -291,6 +292,7 @@ public class TimePicker extends FrameLayout {
 
     /**
      * Set the callback that indicates the time has been adjusted by the user.
+     *
      * @param onTimeChangedListener the callback, should not be null.
      */
     public void setOnTimeChangedListener(OnTimeChangedListener onTimeChangedListener) {
@@ -298,7 +300,6 @@ public class TimePicker extends FrameLayout {
     }
 
     /**
-     *
      * @return A list of lights status from the switches
      */
     public Integer getCurrentLight() {
@@ -330,6 +331,7 @@ public class TimePicker extends FrameLayout {
 
     /**
      * Set whether in 24 hour or AM/PM mode.
+     *
      * @param is24HourView True = 24 hour mode. False = AM/PM.
      */
     public void setIs24HourView(Boolean is24HourView) {

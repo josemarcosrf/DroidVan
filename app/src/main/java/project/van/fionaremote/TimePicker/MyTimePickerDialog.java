@@ -19,8 +19,6 @@ package project.van.fionaremote.TimePicker;
  */
 
 
-import java.util.Calendar;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,6 +29,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+
+import java.util.Calendar;
 
 import project.van.fionaremote.R;
 
@@ -47,11 +47,11 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     public interface OnTimeSetListener {
 
         /**
-         * @param signal The ON or OFF state to change the light to
-         * @param light The index of the light to change
-         * @param view The view associated with this listener.
+         * @param signal    The ON or OFF state to change the light to
+         * @param light     The index of the light to change
+         * @param view      The view associated with this listener.
          * @param hourOfDay The hour that was set.
-         * @param minute The minute that was set.
+         * @param minute    The minute that was set.
          */
         void onTimeSet(TimePicker view,
                        boolean signal, int light,
@@ -79,10 +79,10 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     boolean mIs24HourView;
 
     /**
-     * @param context Parent.
-     * @param callBack How parent is notified.
-     * @param hourOfDay The initial hour.
-     * @param minute The initial minute.
+     * @param context      Parent.
+     * @param callBack     How parent is notified.
+     * @param hourOfDay    The initial hour.
+     * @param minute       The initial minute.
      * @param is24HourView Whether this is a 24 hour view, or AM/PM.
      */
     public MyTimePickerDialog(Context context,
@@ -94,11 +94,11 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     }
 
     /**
-     * @param context Parent.
-     * @param theme the theme to apply to this dialog
-     * @param callBack How parent is notified.
-     * @param hourOfDay The initial hour.
-     * @param minute The initial minute.
+     * @param context      Parent.
+     * @param theme        the theme to apply to this dialog
+     * @param callBack     How parent is notified.
+     * @param hourOfDay    The initial hour.
+     * @param minute       The initial minute.
      * @param is24HourView Whether this is a 24 hour view, or AM/PM.
      */
     public MyTimePickerDialog(Context context,
@@ -144,8 +144,7 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
                 mCallback.onTimeSet(mTimePicker, true,
                         mTimePicker.getCurrentLight(), mTimePicker.getCurrentHour(),
                         mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());
-            }
-            else if (which == DialogInterface.BUTTON_NEGATIVE){
+            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                 mCallback.onTimeSet(mTimePicker, false,
                         mTimePicker.getCurrentLight(), mTimePicker.getCurrentHour(),
                         mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());

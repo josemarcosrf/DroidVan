@@ -1,7 +1,5 @@
 package project.van.fionaremote;
 
-import project.van.fionaremote.TimePicker.MyTimePickerDialog;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,9 +18,12 @@ import com.android.volley.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+
+import project.van.fionaremote.TimePicker.MyTimePickerDialog;
 
 public class TimerActivity extends BaseLayout {
 
@@ -69,7 +70,7 @@ public class TimerActivity extends BaseLayout {
         lightsServer.getTimers(timersListener);
     }
 
-    public void showPicker(){
+    public void showPicker() {
         Calendar now = Calendar.getInstance();
         // Create timePicker dialogue and pass a callback function (as a lambda function)
         MyTimePickerDialog mTimePicker;
@@ -80,18 +81,18 @@ public class TimerActivity extends BaseLayout {
                - Make a REST API call to the Lights server,
                - Add response to the ListAdapter
              */
-            String[] light_names = new String[] { "main", "l1", "l2", "l3" };
+            String[] light_names = new String[]{"main", "l1", "l2", "l3"};
 
             // format the received time delay
             String timePicked = getString(R.string.time) +
-                    String.format("%02d", hours)+
+                    String.format("%02d", hours) +
                     ":" + String.format("%02d", minutes) +
                     ":" + String.format("%02d", seconds);
 
             // Logging
             Log.i(TAG, "Delay => " + timePicked + " Signal => " + signal + " Light index => " + light);
-            Toast.makeText(context,"Light: " + light + " Signal: " + signal +
-                                       " Delay: " + timePicked, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Light: " + light + " Signal: " + signal +
+                    " Delay: " + timePicked, Toast.LENGTH_SHORT).show();
 
             // send a POST request to the RaspberryPi
             lightsServer.setTimerRequest(light_names[light], signal,
@@ -110,8 +111,8 @@ public class TimerActivity extends BaseLayout {
 
     public class CustomAdapter extends BaseAdapter {
 
-        private Context mContext;
-        private JSONArray timers;
+        private final Context mContext;
+        private final JSONArray timers;
 
         public CustomAdapter(Context context, JSONArray timers) {
             this.mContext = context;

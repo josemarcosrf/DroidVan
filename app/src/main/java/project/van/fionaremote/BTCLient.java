@@ -13,19 +13,18 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 
-
 public class BTCLient extends Thread {
 
     // TODO: Handle recoonections
     // TODO:
 
-    private BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+    private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     private BluetoothSocket btSocket;
     private BluetoothDevice btDevice;
 
     private static final String TAG = "FionaBTClient";
-    private SharedPreferences sharedPref;
-    private Context context;
+    private final SharedPreferences sharedPref;
+    private final Context context;
 
 
     public BTCLient(Context context, BluetoothDevice device) {

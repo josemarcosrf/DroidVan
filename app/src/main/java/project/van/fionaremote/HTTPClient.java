@@ -19,8 +19,8 @@ public class HTTPClient {
     private static final String light_endpoint = "/lights";
     private static final String timer_endpoint = "/timer";
     private static RequestQueue requestQueue;       // Connection request queue
-    private SharedPreferences sharedPref;
-    private Context context;
+    private final SharedPreferences sharedPref;
+    private final Context context;
 
 
     public HTTPClient(Context context) {

@@ -27,7 +27,7 @@ import java.util.zip.ZipInputStream;
 import ai.snips.platform.SnipsPlatformClient;
 
 
-public class VoiceLightCtlActivity extends BaseLayout  {
+public class VoiceLightCtlActivity extends BaseLayout {
 
     // Logging Activity tag
     private static final String TAG = "FionaVoiceLightCtl";
@@ -105,7 +105,7 @@ public class VoiceLightCtlActivity extends BaseLayout  {
     }
 
     private SnipsPlatformClient createClient(File assistantLocation) {
-        File assistantDir  = new File(assistantLocation, "assistant");
+        File assistantDir = new File(assistantLocation, "assistant");
 
         final SnipsPlatformClient client =
                 new SnipsPlatformClient.Builder(assistantDir)

@@ -107,7 +107,7 @@ public class LightSwitchActivity extends BaseLayout {
                 key = keys.getString(i);
                 Boolean value = response.getBoolean(key);
 
-                Log.d(TAG, key + " ==> " + value + " | " + (value? "ON" : "OFF"));
+                Log.d(TAG, key + " ==> " + value + " | " + (value ? "ON" : "OFF"));
 
                 // Move the switches accordingly
                 int resID = getResources().getIdentifier(key + "_switch", "id", getPackageName());

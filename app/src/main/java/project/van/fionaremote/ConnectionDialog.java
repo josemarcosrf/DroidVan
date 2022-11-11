@@ -12,8 +12,8 @@ import android.widget.EditText;
 public class ConnectionDialog {
 
     private static final String TAG = "FionaRPIConnectionDialog";
-    private Context context;
-    private String settingsName;
+    private final Context context;
+    private final String settingsName;
 
 
     public ConnectionDialog(Context context) {
