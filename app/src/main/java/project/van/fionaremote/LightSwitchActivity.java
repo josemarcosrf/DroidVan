@@ -2,7 +2,6 @@ package project.van.fionaremote;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,7 +43,7 @@ public class LightSwitchActivity extends BaseLayout {
         setContentView(R.layout.activity_light_switches);
         super.onCreateDrawer();
 
-        connMsg = (TextView) findViewById(R.id.bt_connection_text);
+        connMsg = findViewById(R.id.bt_connection_text);
         connMsg.setVisibility(View.VISIBLE);
         this.initBT();
     }
@@ -71,10 +69,9 @@ public class LightSwitchActivity extends BaseLayout {
 
         if (btAdapter == null) {
             Toast.makeText(this, "Device doesn't support Bluetooth :(", Toast.LENGTH_SHORT).show();
-        }
-        else if (!btAdapter.isEnabled()) {
+        } else if (!btAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            Integer REQUEST_ENABLE_BT = 0;
+            int REQUEST_ENABLE_BT = 0;
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
         if (BTClient != null) {
@@ -147,19 +144,11 @@ public class LightSwitchActivity extends BaseLayout {
         return switchState;
     }
 
-    private void send(Integer channel, Boolean switchState) {
-        try {
-            String mode = switchState ? "1" : "0";
-            // TODO: Handle proper JSON payloads
-            BTClient.send("{\"cmd\": \"switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}");
-            String lightState = BTClient.receive();
-            Log.d(TAG, "Light state: " + lightState);
-            // TODO: Update switches accordingly
-        } catch (IOException ioe) {
-            String msg = "Error sending light switch command to RPI: " + ioe;
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-            Log.e(TAG, msg);
-        }
+    private void callServer(Integer channel, Boolean switchState) {
+        // TODO: Handle proper JSON payloads
+        String mode = switchState ? "1" : "0";
+        String payload = "{\"cmd\": \"switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}";
+        BTClient.request(payload, new BTCallback(this));
     }
 
     /**
@@ -169,7 +158,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.main_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.send(1, switchState);
+        this.callServer(1, switchState);
     }
 
     /**
@@ -179,7 +168,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.l1_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.send(2, switchState);
+        this.callServer(2, switchState);
     }
 
     /**
@@ -189,7 +178,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.l2_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.send(3, switchState);
+        this.callServer(3, switchState);
     }
 
     /**
@@ -199,7 +188,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.l3_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.send(4, switchState);
+        this.callServer(4, switchState);
     }
 
 }

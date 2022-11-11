@@ -6,9 +6,10 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -20,8 +21,8 @@ import java.util.concurrent.Executor;
 
 // The callback interface
 interface BTCallbackInterface {
-    void onComplete(String result);
-    void onResult(JSONObject result);
+    // TODO: Make result a class or a JSONObject
+    void onComplete(JSONObject result);
 }
 
 public class BTClient {
@@ -31,7 +32,7 @@ public class BTClient {
     // Bluetooth
     private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     private BluetoothSocket btSocket;
-    private BluetoothDevice btDevice;
+    private final BluetoothDevice btDevice;
     // Threading
     private final Executor executor;
     private final Handler resultHandler;
@@ -56,15 +57,21 @@ public class BTClient {
     private String getRPIServerUUID() {
         String BtKey = context.getResources().getString(R.string.rpi_bt_uuid);
         String BtServerUUID = context.getResources().getString(R.string.sample_uuid);
-        String address = sharedPref.getString(BtKey, BtServerUUID);
-        return address;
+        return sharedPref.getString(BtKey, BtServerUUID);
     }
 
-    private void notifyResult(String result, BTCallback callback) {
+    private void notifyResult(Boolean error, String res, BTCallback callback) {
         resultHandler.post(new Runnable() {
             @Override
             public void run() {
-                callback.onComplete(result);
+                try {
+                    JSONObject result = new JSONObject();
+                    result.put("error", error);
+                    result.put("result", res);
+                    callback.onComplete(result);
+                } catch (JSONException je) {
+                    Log.e(TAG, "Error composing JSON result: " + je);
+                }
             }
         });
     }
@@ -87,23 +94,7 @@ public class BTClient {
         }
     }
 
-    public void connect(BTCallback callback) {
-        // Equivalent to 'new Runnable() { .... }
-        // But here we use a lambda function instead
-        // For more info see:
-        // https://developer.android.com/guide/background/threading#creating-multiple-threads
-        executor.execute(() -> {
-            try {
-                blockingConnect();
-                notifyResult("Connection OK :)", callback);
-            } catch (IOException e) {
-                String err_msg = "Error connecting to " + btDevice.getName() + ": " + e;
-                notifyResult(err_msg, callback);
-            }
-        });
-    }
-
-    public void send(String msg) throws IOException {
+    public void send(@NonNull String msg) throws IOException {
         OutputStream mmOutputStream = btSocket.getOutputStream();
         mmOutputStream.write(msg.getBytes());
     }
@@ -111,18 +102,10 @@ public class BTClient {
     public String receive() throws IOException {
         InputStream mmInputStream = btSocket.getInputStream();
         byte[] buffer = new byte[256];
-        int bytes;
-
-        try {
-            bytes = mmInputStream.read(buffer);
-            String readMessage = new String(buffer, 0, bytes);
-            Log.d(TAG, "Received: " + readMessage);
-            // btSocket.close();
-            return readMessage;
-        } catch (IOException e) {
-            Log.e(TAG, "Problems reading from socket: " + e);
-            return "";
-        }
+        int bytes = mmInputStream.read(buffer);
+        String readMessage = new String(buffer, 0, bytes);
+        Log.d(TAG, "Received: " + readMessage);
+        return readMessage;
     }
 
     public void close() {
@@ -131,6 +114,36 @@ public class BTClient {
         } catch (IOException e) {
             Log.w(TAG, "BT Socket is already closed");
         }
+    }
+
+    public void connect(BTCallback callback) {
+        // Equivalent to 'new Runnable() { .... }
+        // But here we use a lambda function instead
+        // For more info see:
+        // https://developer.android.com/guide/background/threading#creating-multiple-threads
+        executor.execute(() -> {
+            try {
+                blockingConnect();
+                notifyResult(false, "Connection OK :)", callback);
+            } catch (IOException e) {
+                String err_msg = "Error connecting to " + btDevice.getName() + ": " + e;
+                notifyResult(true, err_msg, callback);
+            }
+        });
+    }
+
+    public void request(String reqBody, BTCallback callback) {
+        executor.execute(() -> {
+            try {
+                send(reqBody);
+                String res = receive();
+                notifyResult(false, res, callback);
+            } catch (IOException e) {
+                String err_msg = "Problems reading from socket: " + e;
+                Log.e(TAG, err_msg);
+                notifyResult(true, err_msg, callback);
+            }
+        });
     }
 }
 

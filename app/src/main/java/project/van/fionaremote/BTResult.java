@@ -2,7 +2,8 @@ package project.van.fionaremote;
 
 
 public abstract class BTResult<T> {
-    private BTResult() {}
+    private BTResult() {
+    }
 
     public static final class Success<T> extends BTResult<T> {
         public T data;
