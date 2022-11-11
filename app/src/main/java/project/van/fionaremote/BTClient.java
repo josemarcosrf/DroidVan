@@ -5,39 +5,52 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 
-public class BTCLient extends Thread {
+// The callback interface
+interface BTCallbackInterface {
+    void onComplete(String result);
+    void onResult(JSONObject result);
+}
+
+public class BTClient {
 
     // TODO: Handle reconnections
 
+    // Bluetooth
     private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     private BluetoothSocket btSocket;
     private BluetoothDevice btDevice;
-
+    // Threading
+    private final Executor executor;
+    private final Handler resultHandler;
+    // Other
     private static final String TAG = "FionaBTClient";
     private final SharedPreferences sharedPref;
     private final Context context;
 
-    public BTCLient(Context context, BluetoothDevice device) {
+    public BTClient(Context context, Executor executor, Handler resultHandler, BluetoothDevice device) {
+        Log.d(TAG, "BT Client init");
         // Shared Preferences where to store app settings (IP, port, ...)
         this.context = context;
         this.btDevice = device;
+        this.executor = executor;
+        this.resultHandler = resultHandler;
+
+        // TODO: Get directly the UUID instead of having the preferences here?
         sharedPref = context.getSharedPreferences(
                 context.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
-
-        Log.d(TAG, "BT Client init function");
-        try {
-            this.ConnectThread(device);
-        } catch (IOException ioe) {
-            Log.e(TAG, "Error: " + ioe);
-        }
     }
 
     private String getRPIServerUUID() {
@@ -47,47 +60,47 @@ public class BTCLient extends Thread {
         return address;
     }
 
-    private void ConnectThread(BluetoothDevice device) throws IOException {
-        /*
-        if (btSocket != null) {
-            if(btSocket.isConnected()) {
-                send();
+    private void notifyResult(String result, BTCallback callback) {
+        resultHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onComplete(result);
             }
-        }
-        */
-        BluetoothSocket sock = null;
-        BluetoothDevice mmDevice = device;
-        try {
-            String uuidStr = getRPIServerUUID();
-            Log.d(TAG, "RPI UUID at BTClient: " + uuidStr);
-            sock = mmDevice.createRfcommSocketToServiceRecord(UUID.fromString(uuidStr));
-        } catch (IOException e) {
-            Log.e(TAG, "Socket's create() method failed", e);
-        }
-        btSocket = sock;
+        });
+    }
+
+    private void blockingConnect() throws IOException {
         btAdapter.cancelDiscovery();
-        try {
-            btSocket.connect();
-        } catch (IOException connectException) {
-            Log.v(TAG, "Connection exception!");
+        Log.d(TAG, "BTSocket is null: " + (btSocket == null));
+        if (btSocket == null) {
             try {
-                btSocket.close();
-                /*
-                btSocket = (BluetoothSocket) btDevice.getClass().getMethod(
-                    "createRfcobtSocket", new Class[]{int.class}).invoke(btDevice, 1);
-                btSocket.connect();
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                */
-            } catch (IOException closeException) {
-                Log.e(TAG, "Connection closed!");
+                String uuidStr = getRPIServerUUID();
+                Log.d(TAG, "RPI UUID at BTClient: " + uuidStr);
+                btSocket = btDevice.createRfcommSocketToServiceRecord(UUID.fromString(uuidStr));
+            } catch (IOException e) {
+                Log.e(TAG, "Socket's create() method failed", e);
             }
         }
+        if (btSocket.isConnected()) Log.i(TAG, "BT Socket already connected");
+        else {
+            btSocket.connect();
+        }
+    }
+
+    public void connect(BTCallback callback) {
+        // Equivalent to 'new Runnable() { .... }
+        // But here we use a lambda function instead
+        // For more info see:
+        // https://developer.android.com/guide/background/threading#creating-multiple-threads
+        executor.execute(() -> {
+            try {
+                blockingConnect();
+                notifyResult("Connection OK :)", callback);
+            } catch (IOException e) {
+                String err_msg = "Error connecting to " + btDevice.getName() + ": " + e;
+                notifyResult(err_msg, callback);
+            }
+        });
     }
 
     public void send(String msg) throws IOException {
@@ -120,3 +133,4 @@ public class BTCLient extends Thread {
         }
     }
 }
+

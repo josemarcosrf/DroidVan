@@ -61,7 +61,7 @@ public class BaseLayout extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // action when action_search was selected
-            case R.id.ip_setting:
+            case R.id.rpi_settings:
                 ConnectionDialog diag = new ConnectionDialog(this);
                 diag.showConnectionDialog();
                 break;

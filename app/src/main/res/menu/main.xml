@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/ip_setting"
+        android:id="@+id/rpi_settings"
         android:title="@string/conn_rpi_settings" />
 </menu>

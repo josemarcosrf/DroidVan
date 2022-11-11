@@ -2,39 +2,42 @@ package project.van.fionaremote;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class LightSwitchActivity extends BaseLayout {
 
-    // TODO: Handle continous attempts to reconnect (every x seconds)
+    // TODO: Handle continous attempts to reconnect (or on every click? by BTClient...)
     // TODO: Connect and send / receive with in a separate thread with callbacks or similar
     // TODO: Become aware of server disconnection
     // TODO: Handle Bluetooth Enabling intent
 
     // Logging Activity tag
     private static final String TAG = "FionaManualLight";
-    private HTTPClient req;
-    private BTCLient btClient = null;
-    private TextView connMsg = null;
-    private Response.Listener<JSONObject> lightsListener;
-    //    private GestureDetectorCompat gestureObject;
-
-    private final Integer REQUEST_ENABLE_BT = 0;
+    private TextView connMsg;
+    // Bluetooth
+    private BTClient BTClient;
+    // Thread variables
+    ExecutorService executorService = Executors.newFixedThreadPool(4);
+    Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+    BTCallback callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,49 +47,43 @@ public class LightSwitchActivity extends BaseLayout {
 
         connMsg = (TextView) findViewById(R.id.bt_connection_text);
         connMsg.setVisibility(View.VISIBLE);
-        this.checkBT();
-
-        // HTTP Client to RPI server
-        // TODO: Remove HTTP Client
-        req = new HTTPClient(this);
-        lightsListener = response -> {
-            Log.d(TAG, response.toString());
-            updateLightsState(response);
-        };
+        this.initBT();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        this.checkBT();
-
-        // check the current lights state to adjust the switches
-        // TODO: Read from bluetooth socket
-        req.getLightsState(lightsListener);
+        this.initBT();
+        // TODO: check the current lights state to adjust the switches
     }
 
     @Override
     protected void onDestroy() {
         Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
-        btClient.close();
+        BTClient.close();
         super.onDestroy();
     }
 
-    private void checkBT() {
+    private void initBT() {
+        // TODO: Move the discovery away from the main view.
+        // TODO: How do we start the activity when is not here?
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (btAdapter == null) {
             Toast.makeText(this, "Device doesn't support Bluetooth :(", Toast.LENGTH_SHORT).show();
         }
-        if (!btAdapter.isEnabled()) {
+        else if (!btAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            Integer REQUEST_ENABLE_BT = 0;
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
-        if (btClient != null) {
+        if (BTClient != null) {
             // TODO: Check connectivity instead of the instance not being null
             return;
         }
 
+        // TODO: Handle btAdapter being null
+        assert btAdapter != null;
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
 
         if (pairedDevices.size() > 0) {
@@ -100,8 +97,13 @@ public class LightSwitchActivity extends BaseLayout {
                 if (deviceName.equals("raspberrypi")) {
                     Log.i(TAG, "Found raspberrypi!!!! Trying to connect!");
                     Toast.makeText(this, "Connecting to " + deviceName, Toast.LENGTH_SHORT).show();
-                    btClient = new BTCLient(this, device);
-//                    connMsg.setVisibility(View.INVISIBLE);
+                    BTClient = new BTClient(
+                            this,
+                            executorService,
+                            mainThreadHandler,
+                            device);
+                    BTClient.connect(new BTCallback(this));
+                    connMsg.setVisibility(View.INVISIBLE);
                     break;
                 }
             }
@@ -112,7 +114,6 @@ public class LightSwitchActivity extends BaseLayout {
 
     public void requestLightState(View view) {
         // TODO: Read from bluetooth socket
-        req.getLightsState(lightsListener);
     }
 
     private void updateLightsState(JSONObject response) {
@@ -150,9 +151,9 @@ public class LightSwitchActivity extends BaseLayout {
         try {
             String mode = switchState ? "1" : "0";
             // TODO: Handle proper JSON payloads
-            btClient.send("{\"cmd\": \"switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}");
-            String lightState = btClient.receive();
-            Log.e(TAG, "Light state: " + lightState);
+            BTClient.send("{\"cmd\": \"switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}");
+            String lightState = BTClient.receive();
+            Log.d(TAG, "Light state: " + lightState);
             // TODO: Update switches accordingly
         } catch (IOException ioe) {
             String msg = "Error sending light switch command to RPI: " + ioe;
