@@ -1,8 +1,7 @@
 package project.van.fionaremote;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,8 +26,9 @@ public class LightSwitchActivity extends BaseLayout {
     // TODO: Become aware of server disconnection
     // TODO: Handle Bluetooth Enabling intent
 
-    // Logging Activity tag
+    // Activity variables
     private static final String TAG = "FionaManualLight";
+    private SharedPreferences sharedPref;
     private TextView connMsg;
     // Bluetooth
     private BTClient BTClient;
@@ -45,13 +45,22 @@ public class LightSwitchActivity extends BaseLayout {
 
         connMsg = findViewById(R.id.bt_connection_text);
         connMsg.setVisibility(View.VISIBLE);
-        this.initBT();
+
+        // TODO: Get directly the UUID instead of having the preferences here?
+        sharedPref = this.getSharedPreferences(
+                this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
+
+        UUID serverUUID = getRPIServerUUID();
+        BTClient = new BTClient(executorService, mainThreadHandler);
+        BTClient.findDevice("raspberrypi");
+        BTClient.pairWith("raspberrypi", new BTCallback(this));
+        BTClient.connect(serverUUID, new BTCallback(this));
+        connMsg.setVisibility(View.INVISIBLE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        this.initBT();
         // TODO: check the current lights state to adjust the switches
     }
 
@@ -62,51 +71,11 @@ public class LightSwitchActivity extends BaseLayout {
         super.onDestroy();
     }
 
-    private void initBT() {
-        // TODO: Move the discovery away from the main view.
-        // TODO: How do we start the activity when is not here?
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        if (btAdapter == null) {
-            Toast.makeText(this, "Device doesn't support Bluetooth :(", Toast.LENGTH_SHORT).show();
-        } else if (!btAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            int REQUEST_ENABLE_BT = 0;
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-        if (BTClient != null) {
-            // TODO: Check connectivity instead of the instance not being null
-            return;
-        }
-
-        // TODO: Handle btAdapter being null
-        assert btAdapter != null;
-        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-
-        if (pairedDevices.size() > 0) {
-            // There are paired devices. Get the name and address of each paired device.
-            for (BluetoothDevice device : pairedDevices) {
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                Log.d(TAG, "Found BT device: " + deviceName + " @" + deviceHardwareAddress);
-
-                // TODO: Define RPI name in Resources
-                if (deviceName.equals("raspberrypi")) {
-                    Log.i(TAG, "Found raspberrypi!!!! Trying to connect!");
-                    Toast.makeText(this, "Connecting to " + deviceName, Toast.LENGTH_SHORT).show();
-                    BTClient = new BTClient(
-                            this,
-                            executorService,
-                            mainThreadHandler,
-                            device);
-                    BTClient.connect(new BTCallback(this));
-                    connMsg.setVisibility(View.INVISIBLE);
-                    break;
-                }
-            }
-        } else {
-            Log.d(TAG, "Couldn't find any BT device!");
-        }
+    private UUID getRPIServerUUID() {
+        String BtKey = this.getResources().getString(R.string.rpi_bt_uuid);
+        String BtServerUUID = this.getResources().getString(R.string.sample_uuid);
+        String uuidStr = sharedPref.getString(BtKey, BtServerUUID);
+        return UUID.fromString(uuidStr);
     }
 
     public void requestLightState(View view) {
@@ -122,7 +91,7 @@ public class LightSwitchActivity extends BaseLayout {
             try {
                 // key is the light name (String), value is a light state (Boolean)
                 key = keys.getString(i);
-                Boolean value = response.getBoolean(key);
+                boolean value = response.getBoolean(key);
 
                 Log.d(TAG, key + " ==> " + value + " | " + (value ? "ON" : "OFF"));
 

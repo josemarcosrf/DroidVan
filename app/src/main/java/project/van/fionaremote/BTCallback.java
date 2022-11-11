@@ -1,6 +1,7 @@
 package project.van.fionaremote;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,8 +17,8 @@ public class BTCallback implements BTCallbackInterface {
     }
 
     @Override
-    public void onComplete(JSONObject result) {
-        String msg = "Response from BTClient: " + result.toString();
+    public void onComplete(@NonNull JSONObject result) {
+        String msg = "Response from BTClient: " + result;
         Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
         try {
             boolean isError = result.getBoolean("ok");
