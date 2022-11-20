@@ -59,6 +59,8 @@ public class LightSwitchActivity extends BaseLayout {
         BTClient.findDevice("raspberrypi");
         BTClient.pairWith("raspberrypi", new BTCallback(this));
         BTClient.connect(getRPIServerUUID(), new BTCallback(this));
+
+        // TODO: Disable this message depending on the "connecting" response.
         connMsg.setVisibility(View.INVISIBLE);
     }
 

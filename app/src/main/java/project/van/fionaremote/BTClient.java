@@ -26,6 +26,7 @@ interface BTCallbackInterface {
 public class BTClient {
 
     // TODO: Handle reconnections
+    // TODO: Each `notify` call should have a function ID to handle responses accordingly
 
     // Bluetooth
     private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();

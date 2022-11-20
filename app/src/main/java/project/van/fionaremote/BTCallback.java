@@ -31,18 +31,12 @@ public class BTCallback implements BTCallbackInterface {
                     Toast.makeText(this.ctx, "Response from BTClient:" + msg, Toast.LENGTH_SHORT).show();
                 } catch (JSONException ignored) {}
                 try {
-                    // TODO: Update light state
                     JSONArray lState = result.getJSONArray("state");
                     String msg = "Lights: " + lState;
                     Log.d(TAG, msg);
                     Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
+                    // Update switches
                     ((LightSwitchActivity)ctx).updateLightSwitches(lState);
-
-//                    ((LightSwitchActivity)ctx).runOnUiThread(new Runnable() {
-//                        public void run() {
-//                            Log.d("UI thread", "I am the UI thread");
-//                        }
-//                    });
 
                 } catch (JSONException ignored) {}
             }
