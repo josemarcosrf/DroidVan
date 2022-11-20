@@ -20,7 +20,6 @@ import java.util.concurrent.Executor;
 
 // The callback interface
 interface BTCallbackInterface {
-    // TODO: Make result a class or a JSONObject
     void onComplete(JSONObject result);
 }
 
@@ -98,16 +97,9 @@ public class BTClient {
         }
     }
 
-    private void notifyResult(Boolean error, String res, BTCallback callback) {
+    private void notifyResult(JSONObject payload, BTCallback callback) {
         resultHandler.post(() -> {
-            try {
-                JSONObject result = new JSONObject();
-                result.put("error", error);
-                result.put("result", res);
-                callback.onComplete(result);
-            } catch (JSONException je) {
-                Log.e(TAG, "Error composing JSON result: " + je);
-            }
+            callback.onComplete(payload);
         });
     }
 
@@ -115,13 +107,13 @@ public class BTClient {
         executor.execute(() -> {
             try {
                 if (findDevice(deviceName)) {
-                    notifyResult(false, "BT Device found", callback);
+                    notifyResult(buildPayload(true, "BT Device found"), callback);
                 } else {
-                    notifyResult(true, "Device not found!", callback);
+                    notifyResult(buildPayload(false, "Device not found!"), callback);
                 }
             } catch (RuntimeException re) {
                 Log.e(TAG, "Runtime exception while pairing: " + re);
-                notifyResult(true, String.valueOf(re), callback);
+                notifyResult(buildPayload(false, String.valueOf(re)), callback);
             } catch (Exception e) {
                 Log.e(TAG, "Other exception while pairing: " + e);
             }
@@ -136,10 +128,10 @@ public class BTClient {
         executor.execute(() -> {
             try {
                 blockingConnect(uuid);
-                notifyResult(false, "Connection OK :)", callback);
+                notifyResult(buildPayload(true, "Connection OK :)"), callback);
             } catch (IOException e) {
                 String err_msg = "Error connecting to " + btDevice.getName() + ": " + e;
-                notifyResult(true, err_msg, callback);
+                notifyResult(buildPayload(false, err_msg), callback);
             }
         });
     }
@@ -149,11 +141,16 @@ public class BTClient {
             try {
                 send(reqBody);
                 String res = receive();
-                notifyResult(false, res, callback);
+                Log.d(TAG, "Response from BT Server: " + res);
+                JSONObject json = new JSONObject(res);
+                notifyResult(json, callback);
             } catch (IOException e) {
                 String err_msg = "Problems reading from socket: " + e;
                 Log.e(TAG, err_msg);
-                notifyResult(true, err_msg, callback);
+                notifyResult(buildPayload(false, err_msg), callback);
+            } catch (JSONException je) {
+                Log.e(TAG, "Error building JSON response: " + je);
+                je.printStackTrace();
             }
         });
     }
@@ -178,6 +175,17 @@ public class BTClient {
         } catch (IOException e) {
             Log.w(TAG, "BT Socket is already closed");
         }
+    }
+
+    private JSONObject buildPayload(boolean ok, String msg) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("ok", ok);
+            result.put("msg", msg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
 
