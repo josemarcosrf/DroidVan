@@ -35,7 +35,6 @@ public class LightSwitchActivity extends BaseLayout {
     // Thread variables
     ExecutorService executorService = Executors.newFixedThreadPool(4);
     Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private Switch aSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

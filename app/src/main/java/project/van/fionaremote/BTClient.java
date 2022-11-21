@@ -197,7 +197,10 @@ public class BTClient {
         JSONObject result = new JSONObject();
         try {
             result.put("ok", ok);
-            result.put("msg", msg);
+            if (ok)
+                result.put("msg", msg);
+            else
+                result.put("error", msg);
         } catch (JSONException e) {
             e.printStackTrace();
         }
