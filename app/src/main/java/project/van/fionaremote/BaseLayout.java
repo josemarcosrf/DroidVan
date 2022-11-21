@@ -1,6 +1,8 @@
 package project.van.fionaremote;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import java.util.UUID;
 
 public class BaseLayout extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
@@ -38,6 +42,15 @@ public class BaseLayout extends AppCompatActivity implements
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    public UUID getRPIServerUUID() {
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
+        String BtKey = this.getResources().getString(R.string.rpi_bt_uuid);
+        String BtServerUUID = this.getResources().getString(R.string.sample_uuid);
+        String uuidStr = sharedPref.getString(BtKey, BtServerUUID);
+        return UUID.fromString(uuidStr);
     }
 
     @Override

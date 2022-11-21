@@ -1,7 +1,10 @@
 package project.van.fionaremote;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,21 +21,27 @@ import com.android.volley.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import project.van.fionaremote.TimePicker.MyTimePickerDialog;
 
 public class TimerActivity extends BaseLayout {
 
     private static final String TAG = "FionaTimerActivity";
-
-    private HTTPClient lightsServer;
-    private Response.Listener<JSONArray> timersListener;
-    private Context context;
     private ListView listView;
+    // Bluetooth
+    private BTClient btClient;
+    // Thread variables
+    ExecutorService executorService = Executors.newFixedThreadPool(4);
+    Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +50,6 @@ public class TimerActivity extends BaseLayout {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
         super.onCreateDrawer();
-
-        context = this;
 
         // Floating action button on the right bottom side of the screen
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -53,21 +60,38 @@ public class TimerActivity extends BaseLayout {
         // TODO: Add onClickListener to each list element
         // TODO: Each element of the list should disappear at the exact received datetime received from the server response
         listView = findViewById(R.id.timer_listview);
-        timersListener = response -> {
-            Log.d(TAG, "LightServer response => " + response.toString());
-            CustomAdapter adapter = new CustomAdapter(this, response);
-            listView.setAdapter(adapter);
-        };
 
-        // RaspVan request class
-        lightsServer = new HTTPClient(this);
+        btClient = project.van.fionaremote.BTClient.getInstance(executorService, mainThreadHandler);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Get timers response to the listener queue
-        lightsServer.getTimers(timersListener);
+        btClient.prepareBT(getRPIServerUUID(), new BTCallback(this));
+    }
+
+    @Override
+    protected void onDestroy() {
+        Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
+        super.onDestroy();
+        btClient.close();
+    }
+
+    private void callServerSchedule(Integer channel, Boolean switchState, int delay) {
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("cmd", "/schedule");
+            payload.put("mode", switchState);
+            payload.put("delay", delay);
+            JSONArray channels = new JSONArray();
+            channels.put(channel + 1);
+            payload.put("channels", channels);
+
+            Log.d(TAG, "Payload: " + payload);
+            btClient.request(payload.toString(), new BTCallback(this));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showPicker() {
@@ -81,8 +105,6 @@ public class TimerActivity extends BaseLayout {
                - Make a REST API call to the Lights server,
                - Add response to the ListAdapter
              */
-            String[] light_names = new String[]{"main", "l1", "l2", "l3"};
-
             // format the received time delay
             String timePicked = getString(R.string.time) +
                     String.format("%02d", hours) +
@@ -91,15 +113,14 @@ public class TimerActivity extends BaseLayout {
 
             // Logging
             Log.i(TAG, "Delay => " + timePicked + " Signal => " + signal + " Light index => " + light);
-            Toast.makeText(context, "Light: " + light + " Signal: " + signal +
+            Toast.makeText(this, "Light: " + light + " Signal: " + signal +
                     " Delay: " + timePicked, Toast.LENGTH_SHORT).show();
 
-            // send a POST request to the RaspberryPi
-            lightsServer.setTimerRequest(light_names[light], signal,
-                    hours * 3600 + 60 * minutes + seconds);
+            // send a request to the RaspberryPi
+            int delay = hours * 3600 + minutes * 60 + seconds;
+            Log.d(TAG , "Total delay: " + delay);
+            callServerSchedule(light, signal, delay);
 
-            // Update timers list
-            lightsServer.getTimers(timersListener);
 
         }, now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE),
@@ -118,7 +139,6 @@ public class TimerActivity extends BaseLayout {
             this.mContext = context;
             this.timers = timers;
             Log.d(TAG, "Timers in CustomAdapter: " + timers);
-
         }
 
         public int getCount() {
@@ -142,7 +162,7 @@ public class TimerActivity extends BaseLayout {
 
                 // Light name and status
                 String name = timer.get(0).toString();
-                Boolean signal = timer.getBoolean(1);
+                boolean signal = timer.getBoolean(1);
 
                 // parse the date
                 String date = timer.get(2).toString();

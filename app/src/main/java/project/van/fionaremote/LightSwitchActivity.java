@@ -28,10 +28,9 @@ public class LightSwitchActivity extends BaseLayout {
 
     // Activity variables
     private static final String TAG = "FionaManualLight";
-    private SharedPreferences sharedPref;
     private TextView connMsg;
     // Bluetooth
-    private BTClient BTClient;
+    private BTClient btClient;
     // Thread variables
     ExecutorService executorService = Executors.newFixedThreadPool(4);
     Handler mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -45,53 +44,30 @@ public class LightSwitchActivity extends BaseLayout {
         connMsg = findViewById(R.id.bt_connection_text);
         connMsg.setVisibility(View.VISIBLE);
 
-        sharedPref = this.getSharedPreferences(
-                this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
-
-        prepareBT();
-    }
-
-    private void prepareBT() {
-        BTClient = new BTClient(executorService, mainThreadHandler);
-        boolean btFound = BTClient.findDevice("raspberrypi", new BTCallback(this));
-        if (btFound) {
-            BTClient.pairWith("raspberrypi", new BTCallback(this));
-            BTClient.connect(getRPIServerUUID(), new BTCallback(this));
-        } else {
-            Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
-        }
+        btClient = project.van.fionaremote.BTClient.getInstance(executorService, mainThreadHandler);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BTClient.connect(getRPIServerUUID(), new BTCallback(this));
-        prepareBT();
+        btClient.prepareBT(getRPIServerUUID(), new BTCallback(this));
     }
 
     @Override
     protected void onDestroy() {
         Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
-        BTClient.close();
+        btClient.close();
         super.onDestroy();
-    }
-
-    private UUID getRPIServerUUID() {
-        String BtKey = this.getResources().getString(R.string.rpi_bt_uuid);
-        String BtServerUUID = this.getResources().getString(R.string.sample_uuid);
-        String uuidStr = sharedPref.getString(BtKey, BtServerUUID);
-        return UUID.fromString(uuidStr);
     }
 
     private Boolean checkToggleState(@NonNull Switch aSwitch) {
         // check current state of a Switch (true or false).
-        final Boolean switchState = aSwitch.isChecked();
-        return switchState;
+        return aSwitch.isChecked();
     }
 
     private void callServerLightState() {
         String payload = "{\"cmd\": \"/read\"}";
-        BTClient.request(payload, new BTCallback(this));
+        btClient.request(payload, new BTCallback(this));
     }
 
     public void setConnMsgVisibility(boolean visibility) {
@@ -101,7 +77,7 @@ public class LightSwitchActivity extends BaseLayout {
     private void callServerSwitch(Integer channel, Boolean switchState) {
         String mode = switchState ? "1" : "0";
         String payload = "{\"cmd\": \"/switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}";
-        BTClient.request(payload, new BTCallback(this));
+        btClient.request(payload, new BTCallback(this));
     }
 
     public void updateLightSwitches(@NonNull JSONArray state) {
