@@ -25,7 +25,6 @@ public class LightSwitchActivity extends BaseLayout {
 
     // TODO: Handle continous attempts to reconnect (or on every click? by BTClient...)
     // TODO: Become aware of server disconnection
-    // TODO: Handle Bluetooth Enabling intent
 
     // Activity variables
     private static final String TAG = "FionaManualLight";
@@ -47,7 +46,6 @@ public class LightSwitchActivity extends BaseLayout {
         connMsg = findViewById(R.id.bt_connection_text);
         connMsg.setVisibility(View.VISIBLE);
 
-        // TODO: Get directly the UUID instead of having the preferences here?
         sharedPref = this.getSharedPreferences(
                 this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
 
@@ -56,12 +54,13 @@ public class LightSwitchActivity extends BaseLayout {
 
     private void prepareBT() {
         BTClient = new BTClient(executorService, mainThreadHandler);
-        BTClient.findDevice("raspberrypi");
-        BTClient.pairWith("raspberrypi", new BTCallback(this));
-        BTClient.connect(getRPIServerUUID(), new BTCallback(this));
-
-        // TODO: Disable this message depending on the "connecting" response.
-        connMsg.setVisibility(View.INVISIBLE);
+        boolean btFound = BTClient.findDevice("raspberrypi", new BTCallback(this));
+        if (btFound) {
+            BTClient.pairWith("raspberrypi", new BTCallback(this));
+            BTClient.connect(getRPIServerUUID(), new BTCallback(this));
+        } else {
+            Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -96,8 +95,11 @@ public class LightSwitchActivity extends BaseLayout {
         BTClient.request(payload, new BTCallback(this));
     }
 
+    public void setConnMsgVisibility(boolean visibility) {
+        connMsg.setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
+    }
+
     private void callServerSwitch(Integer channel, Boolean switchState) {
-        // TODO: Handle proper JSON payloads
         String mode = switchState ? "1" : "0";
         String payload = "{\"cmd\": \"/switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}";
         BTClient.request(payload, new BTCallback(this));

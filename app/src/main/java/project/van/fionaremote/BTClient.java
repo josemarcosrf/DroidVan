@@ -20,13 +20,19 @@ import java.util.concurrent.Executor;
 
 // The callback interface
 interface BTCallbackInterface {
+
+    void onBTNotEnabled();
+
+    void onConnect(@NonNull JSONObject result);
+
+    void onSwitch(@NonNull JSONObject result);
+
     void onComplete(JSONObject result);
 }
 
 public class BTClient {
 
     // TODO: Handle reconnections
-    // TODO: Each `notify` call should have a function ID to handle responses accordingly
 
     // Bluetooth
     private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -45,18 +51,15 @@ public class BTClient {
         this.resultHandler = resultHandler;
     }
 
-    public boolean findDevice(String devicePairName) {
-        // TODO: How do we start the activity when is not here?
+    public boolean findDevice(String devicePairName, BTCallback callback) {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (btAdapter == null) {
             throw new RuntimeException("Device doesn't support Bluetooth :(");
         } else if (!btAdapter.isEnabled()) {
-            // TODO: Handle this with a special callback
-            Log.w(TAG, "Adapter is not enabled");
-            /*Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            int REQUEST_ENABLE_BT = 0;
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);*/
+            resultHandler.post(() -> {
+                callback.onBTNotEnabled();
+            });
         }
 
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
@@ -81,20 +84,26 @@ public class BTClient {
 
     private void blockingConnect(UUID uuid) throws IOException {
         btAdapter.cancelDiscovery();
+        if (btDevice == null)
+            throw new IOException("btDevice is null");
+
         Log.d(TAG, "BTSocket is null: " + (btSocket == null));
         if (btSocket == null) {
             try {
-                Log.d(TAG, "Creating bt socker RFCOMM");
-                btSocket = btDevice.createRfcommSocketToServiceRecord(uuid);
+                Log.d(TAG, "Creating BT socket RFCOMM");
+                btSocket = btDevice.createRfcommSocketToServiceRecord(uuid); // btDevice might be null
                 connUUID = uuid;
             } catch (IOException e) {
                 Log.e(TAG, "Socket's create() method failed", e);
             }
         }
-        if (btSocket.isConnected()) Log.i(TAG, "BT Socket already connected");
-        else {
-            Log.d(TAG, "Connecting to RPI UUID: " + uuid);
-            btSocket.connect();
+        if (btSocket != null) {
+            if (btSocket.isConnected())
+                Log.i(TAG, "BT Socket already connected");
+            else {
+                Log.d(TAG, "Connecting to RPI UUID: " + uuid);
+                btSocket.connect();
+            }
         }
     }
 
@@ -107,7 +116,7 @@ public class BTClient {
     public void pairWith(String deviceName, BTCallback callback) {
         executor.execute(() -> {
             try {
-                if (findDevice(deviceName)) {
+                if (findDevice(deviceName, callback)) {
                     notifyResult(buildPayload(true, "BT Device found"), callback);
                 } else {
                     notifyResult(buildPayload(false, "Device not found!"), callback);
@@ -129,9 +138,13 @@ public class BTClient {
         executor.execute(() -> {
             try {
                 blockingConnect(uuid);
-                notifyResult(buildPayload(true, "Connection OK :)"), callback);
+                JSONObject payload = buildPayload(true, "Connection OK :)");
+                resultHandler.post(() -> {
+                    callback.onConnect(payload);
+                });
             } catch (IOException e) {
-                String err_msg = "Error connecting to " + btDevice.getName() + ": " + e;
+                String btDeviceName = btDevice != null? btDevice.getName() : "RPI";
+                String err_msg = "Error connecting to " + btDeviceName + ": " + e;
                 notifyResult(buildPayload(false, err_msg), callback);
             }
         });
@@ -143,8 +156,10 @@ public class BTClient {
                 send(reqBody);
                 String res = receive();
                 Log.d(TAG, "Response from BT Server: " + res);
-                JSONObject json = new JSONObject(res);
-                notifyResult(json, callback);
+                JSONObject response_payload = new JSONObject(res);
+                resultHandler.post(() -> {
+                    callback.onSwitch(response_payload);
+                });
             } catch (IOException e) {
                 String err_msg = "Problems reading from socket: " + e;
                 Log.e(TAG, err_msg);

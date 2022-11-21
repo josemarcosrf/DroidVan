@@ -51,7 +51,7 @@
                 android:id="@+id/bt_connection_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Connecting to RPI via BT"
+                android:text="📡 NOT connected to RPI via BT 📡"
                 tools:visibility="visible"
                 android:textColor="#AF1717"
                 app:layout_constraintBottom_toTopOf="@+id/fetch_state_button"
