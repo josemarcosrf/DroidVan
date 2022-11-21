@@ -27,6 +27,8 @@ interface BTCallbackInterface {
 
     void onSwitch(@NonNull JSONObject result);
 
+    void onSchedule(@NonNull JSONObject result);
+
     void onComplete(JSONObject result);
 }
 
@@ -57,9 +59,7 @@ public class BTClient {
         if (btAdapter == null) {
             throw new RuntimeException("Device doesn't support Bluetooth :(");
         } else if (!btAdapter.isEnabled()) {
-            resultHandler.post(() -> {
-                callback.onBTNotEnabled();
-            });
+            resultHandler.post(callback::onBTNotEnabled);
         }
 
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
@@ -155,7 +155,7 @@ public class BTClient {
             try {
                 send(reqBody);
                 String res = receive();
-                Log.d(TAG, "Response from BT Server: " + res);
+                Log.d(TAG, "Request Response from BT Server: " + res);
                 JSONObject response_payload = new JSONObject(res);
                 resultHandler.post(() -> {
                     callback.onSwitch(response_payload);
@@ -170,6 +170,14 @@ public class BTClient {
             }
         });
     }
+
+/*    public void schedule() {
+        executor.execute(() -> {
+            try {
+            } catch () {
+            }
+        }
+    }*/
 
     public void send(@NonNull String msg) throws IOException {
         OutputStream mmOutputStream = btSocket.getOutputStream();
@@ -197,7 +205,10 @@ public class BTClient {
         JSONObject result = new JSONObject();
         try {
             result.put("ok", ok);
-            result.put("msg", msg);
+            if (ok)
+                result.put("msg", msg);
+            else
+                result.put("error", msg);
         } catch (JSONException e) {
             e.printStackTrace();
         }

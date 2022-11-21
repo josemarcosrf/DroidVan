@@ -1,7 +1,8 @@
 package project.van.fionaremote;
 
+import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,76 +24,48 @@ import java.util.concurrent.Executors;
 
 public class LightSwitchActivity extends BaseLayout {
 
-    // TODO: Handle continous attempts to reconnect (or on every click? by BTClient...)
+    // TODO: Handle continous attempts to reconnect (or on every click? by BTCLient...)
     // TODO: Become aware of server disconnection
 
     // Activity variables
     private static final String TAG = "FionaManualLight";
-    private SharedPreferences sharedPref;
     private TextView connMsg;
-    // Bluetooth
-    private BTClient BTClient;
-    // Thread variables
-    ExecutorService executorService = Executors.newFixedThreadPool(4);
-    Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-    private Switch aSwitch;
+    private FionaRemote app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_light_switches);
         super.onCreateDrawer();
-
         connMsg = findViewById(R.id.bt_connection_text);
         connMsg.setVisibility(View.VISIBLE);
 
-        sharedPref = this.getSharedPreferences(
-                this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
+        app = (FionaRemote) getApplication();
+        Log.d(TAG, "APPLICATION: " + app);
 
-        prepareBT();
+        ComponentName callingActivity = getCallingActivity();
+        Log.d(TAG, "ACTIVITY: " + callingActivity);
+
+        app.prepareBT(new BTCallback(this));
     }
 
-    private void prepareBT() {
-        BTClient = new BTClient(executorService, mainThreadHandler);
-        boolean btFound = BTClient.findDevice("raspberrypi", new BTCallback(this));
-        if (btFound) {
-            BTClient.pairWith("raspberrypi", new BTCallback(this));
-            BTClient.connect(getRPIServerUUID(), new BTCallback(this));
-        } else {
-            Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BTClient.connect(getRPIServerUUID(), new BTCallback(this));
-        prepareBT();
+        app.callServerLightState(new BTCallback(this));
     }
 
     @Override
     protected void onDestroy() {
         Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
-        BTClient.close();
         super.onDestroy();
-    }
-
-    private UUID getRPIServerUUID() {
-        String BtKey = this.getResources().getString(R.string.rpi_bt_uuid);
-        String BtServerUUID = this.getResources().getString(R.string.sample_uuid);
-        String uuidStr = sharedPref.getString(BtKey, BtServerUUID);
-        return UUID.fromString(uuidStr);
     }
 
     private Boolean checkToggleState(@NonNull Switch aSwitch) {
         // check current state of a Switch (true or false).
         final Boolean switchState = aSwitch.isChecked();
         return switchState;
-    }
-
-    private void callServerLightState() {
-        String payload = "{\"cmd\": \"/read\"}";
-        BTClient.request(payload, new BTCallback(this));
     }
 
     public void setConnMsgVisibility(boolean visibility) {
@@ -102,7 +75,7 @@ public class LightSwitchActivity extends BaseLayout {
     private void callServerSwitch(Integer channel, Boolean switchState) {
         String mode = switchState ? "1" : "0";
         String payload = "{\"cmd\": \"/switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}";
-        BTClient.request(payload, new BTCallback(this));
+        app.getBtClient().request(payload, new BTCallback(this));
     }
 
     public void updateLightSwitches(@NonNull JSONArray state) {
@@ -126,7 +99,7 @@ public class LightSwitchActivity extends BaseLayout {
     }
 
     public void requestLightState(View view) {
-        callServerLightState();
+        app.callServerLightState(new BTCallback(this));
     }
 
     /**

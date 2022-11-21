@@ -17,7 +17,6 @@ public class BaseLayout extends AppCompatActivity implements
 
     private static final String TAG = "FionaBaseActivity";
     private DrawerLayout mDrawerLayout;
-
     ActionBarDrawerToggle toggle;
 
     protected void onCreateDrawer() {
@@ -38,6 +37,10 @@ public class BaseLayout extends AppCompatActivity implements
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

@@ -2,6 +2,8 @@ package project.van.fionaremote;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,27 +24,25 @@ import org.json.JSONException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import project.van.fionaremote.TimePicker.MyTimePickerDialog;
 
 public class TimerActivity extends BaseLayout {
 
     private static final String TAG = "FionaTimerActivity";
-
-    private HTTPClient lightsServer;
-    private Response.Listener<JSONArray> timersListener;
-    private Context context;
     private ListView listView;
+    private FionaRemote app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        app = (FionaRemote) getApplication();
 
         // Create drawer and main view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
         super.onCreateDrawer();
-
-        context = this;
 
         // Floating action button on the right bottom side of the screen
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -53,21 +53,36 @@ public class TimerActivity extends BaseLayout {
         // TODO: Add onClickListener to each list element
         // TODO: Each element of the list should disappear at the exact received datetime received from the server response
         listView = findViewById(R.id.timer_listview);
-        timersListener = response -> {
-            Log.d(TAG, "LightServer response => " + response.toString());
-            CustomAdapter adapter = new CustomAdapter(this, response);
-            listView.setAdapter(adapter);
-        };
 
-        // RaspVan request class
-        lightsServer = new HTTPClient(this);
+//        this.prepareBT();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Get timers response to the listener queue
-        lightsServer.getTimers(timersListener);
+        app.callServerLightState(new BTCallback(this));
+        // TODO: Get timers response to the listener queue
+    }
+
+    @Override
+    protected void onDestroy() {
+        Toast.makeText(this, "Closing BT connection", Toast.LENGTH_SHORT).show();
+//        BTClient.close();
+        super.onDestroy();
+    }
+
+    private void callServerSchedule(Integer channel, Boolean switchState, int delay) {
+        String mode = switchState ? "1" : "0";
+        String payload = String.join(
+                "",
+                "{\"cmd\": \"/schedule\",",
+                "\"channels\": [" + channel + "],",
+                "\"mode\": " + mode,
+                "\"delay\": " +delay,
+                "}"
+        );
+//        BTClient.request(payload, new BTCallback(this));
     }
 
     public void showPicker() {
@@ -78,11 +93,9 @@ public class TimerActivity extends BaseLayout {
             /*
               TimePicker Listener:
                - Format the received data,
-               - Make a REST API call to the Lights server,
+               - Make a request call to the Lights server,
                - Add response to the ListAdapter
              */
-            String[] light_names = new String[]{"main", "l1", "l2", "l3"};
-
             // format the received time delay
             String timePicked = getString(R.string.time) +
                     String.format("%02d", hours) +
@@ -91,15 +104,12 @@ public class TimerActivity extends BaseLayout {
 
             // Logging
             Log.i(TAG, "Delay => " + timePicked + " Signal => " + signal + " Light index => " + light);
-            Toast.makeText(context, "Light: " + light + " Signal: " + signal +
+            Toast.makeText(this, "Light: " + light + " Signal: " + signal +
                     " Delay: " + timePicked, Toast.LENGTH_SHORT).show();
 
-            // send a POST request to the RaspberryPi
-            lightsServer.setTimerRequest(light_names[light], signal,
-                    hours * 3600 + 60 * minutes + seconds);
-
-            // Update timers list
-            lightsServer.getTimers(timersListener);
+            // send a request to the RaspberryPi
+            int delay = hours * 3600 + minutes * 60 + seconds;
+            callServerSchedule(light, signal, delay);
 
         }, now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE),

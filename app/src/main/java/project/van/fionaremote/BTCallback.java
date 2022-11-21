@@ -1,5 +1,6 @@
 package project.van.fionaremote;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,7 @@ import org.json.JSONObject;
 
 public class BTCallback implements BTCallbackInterface {
     private final Context ctx;
-    private final String TAG = "BTCallback";
+    private final String TAG = "FionaBTCallback";
 
     public BTCallback(Context ctx) {
         this.ctx = ctx;
@@ -26,7 +27,7 @@ public class BTCallback implements BTCallbackInterface {
         Log.w(TAG, "Adapter is not enabled");
         int REQUEST_ENABLE_BT = 0;
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        ((LightSwitchActivity) ctx).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        ((Activity) ctx).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
     }
 
     @Override
@@ -35,11 +36,11 @@ public class BTCallback implements BTCallbackInterface {
             boolean isOk = result.getBoolean("ok");
             ((LightSwitchActivity) ctx).setConnMsgVisibility(!isOk);
             if (isOk) {
-                Toast.makeText(this.ctx,
-                        "Succesfully connected to RPI BT server",
-                        Toast.LENGTH_SHORT).show();
+                String msg = "Succesfully connected to RPI BT server";
+                Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
                 // Fetch light states
-                Log.d(TAG, "Connection was Ok, now requesting light state...");
+                Log.d(TAG, msg);
+                Log.d(TAG, String.valueOf(ctx));
                 ((LightSwitchActivity) ctx).requestLightState(null);
             } else {
                 String notOkReason = result.getString("error");
@@ -63,20 +64,37 @@ public class BTCallback implements BTCallbackInterface {
                 ((LightSwitchActivity) ctx).updateLightSwitches(lState);
             } else {
                 String notOkReason = result.getString("error");
-                String msg = "BT Server returned error: " + notOkReason;
+                String msg = "BT Server returned error onSwitch: " + notOkReason;
                 Log.e(TAG, msg);
                 Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error reading onSwitch BTResponse JSON object");
+            Log.e(TAG, "Error reading onSwitch JSON object: " + e);
+        }
+    }
+
+    @Override
+    public void onSchedule(@NonNull JSONObject result) {
+        try {
+            boolean isOk = result.getBoolean("ok");
+            if (isOk) {
+                JSONArray schedules = result.getJSONArray("scheduled");
+                Log.d(TAG, "schedules: " + schedules.length());
+                // TODO: Update ListView
+            } else {
+                String notOkReason = result.getString("error");
+                String msg = "BT Server returned error onSchedule: " + notOkReason;
+                Log.e(TAG, msg);
+                Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error reading onSchedule JSON object: " + e);
         }
     }
 
     @Override
     public void onComplete(@NonNull JSONObject result) {
-        /**
-         * This is a generic result notifier method. Mostly to debug and show Toasts
-         * */
+        //This is a generic result notifier method. Mostly to debug and show Toasts
         try {
             boolean isOk = result.getBoolean("ok");
             if (isOk) {
@@ -87,12 +105,12 @@ public class BTCallback implements BTCallbackInterface {
             }
             else {
                 String notOkReason = result.getString("error");
-                String msg = "BT Server returned error: " + notOkReason;
+                String msg = "BT Server Error: " + notOkReason;
                 Log.e(TAG, msg);
                 Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error reading onComplete BTResponse JSON object");
+            Log.e(TAG, "Error reading onComplete JSON object: " + e);
         }
     }
 }
