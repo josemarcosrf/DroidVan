@@ -164,7 +164,6 @@ public class BTClient {
         byte[] buffer = new byte[256];
         int bytes = mmInputStream.read(buffer);
         String readMessage = new String(buffer, 0, bytes);
-        Log.d(TAG, "Received: " + readMessage);
         return readMessage;
     }
 

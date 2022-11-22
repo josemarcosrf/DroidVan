@@ -12,7 +12,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-// The callback interface
+/**
+ * Callback interface each activity needs to implements to handle
+ * the back process communications
+ */
 interface BTCallbackInterface {
 
     void onBTNotEnabled();

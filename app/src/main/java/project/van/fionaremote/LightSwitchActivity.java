@@ -85,7 +85,7 @@ public class LightSwitchActivity extends BaseLayout {
     protected void onResume() {
         super.onResume();
         btClient.prepareBT(getRPIServerUUID(), new LightsBTCallback(this));
-        setConnMsgVisibility(btClient.isConnected());
+        setConnMsgVisibility(!btClient.isConnected());
     }
 
     @Override

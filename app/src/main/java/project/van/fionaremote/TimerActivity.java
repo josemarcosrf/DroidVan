@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -105,7 +106,7 @@ public class TimerActivity extends BaseLayout {
     @Override
     protected void onResume() {
         super.onResume();
-        btClient.prepareBT(getRPIServerUUID(), new BTCallback(this));
+        btClient.prepareBT(getRPIServerUUID(), new TimersBTCallback(this));
     }
 
     @Override
@@ -131,14 +132,17 @@ public class TimerActivity extends BaseLayout {
             payload.put("channels", channels);
 
             Log.d(TAG, "Payload: " + payload);
-            btClient.request(payload.toString(), new BTCallback(this));
-        } catch (JSONException e) {
+            btClient.request(payload.toString(), new TimersBTCallback(this));
+        } catch (Exception e) {
+            Log.e(TAG, "Error scheduling Server task: " + e);
             e.printStackTrace();
         }
     }
 
     public void updateTaskList(JSONArray tasks) {
-        Log.d(TAG, "Task to add to list: " + tasks);
+        Log.d(TAG, "BT Server response: Task to add to list: " + tasks);
+        CustomAdapter adapter = new CustomAdapter(this, tasks);
+        listView.setAdapter(adapter);
     }
 
     public void showPicker() {
@@ -154,9 +158,9 @@ public class TimerActivity extends BaseLayout {
              */
             // format the received time delay
             String timePicked = getString(R.string.time) +
-                    String.format("%02d", hours) +
-                    ":" + String.format("%02d", minutes) +
-                    ":" + String.format("%02d", seconds);
+                    String.format(Locale.getDefault(), "%02d", hours) +
+                    ":" + String.format(Locale.getDefault(), "%02d", minutes) +
+                    ":" + String.format(Locale.getDefault(), "%02d", seconds);
 
             // Logging
             Log.i(TAG, "Delay => " + timePicked + " Signal => " + signal + " Light index => " + light);
@@ -167,7 +171,6 @@ public class TimerActivity extends BaseLayout {
             int delay = hours * 3600 + minutes * 60 + seconds;
             Log.d(TAG , "Total delay: " + delay);
             scheduleServerTask(light, signal, delay);
-
 
         }, now.get(Calendar.HOUR_OF_DAY),
                 now.get(Calendar.MINUTE),
@@ -199,31 +202,33 @@ public class TimerActivity extends BaseLayout {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.d(TAG, "In getView. pos " + position);
             LayoutInflater inflater = getLayoutInflater();
             View row = inflater.inflate(R.layout.timer_row, parent, false);
 
             try {
-                JSONArray timer = (JSONArray) this.timers.get(position);
+                JSONArray timerData = (JSONArray) this.timers.get(position);
 
-                // Light name and status
-                String name = timer.get(0).toString();
-                boolean signal = timer.getBoolean(1);
+                // Task time, light and signal
+                String time = timerData.getString(0);
+                JSONObject kwargs = timerData.getJSONObject(1);
+                int channel = kwargs.getJSONArray("channels").getInt(0);
+                int signal = kwargs.getInt("mode");
 
-                // parse the date
-                String date = timer.get(2).toString();
-                String day = date.split("T")[0];
-                String hour = date.split("T")[1].split("\\.")[0];
-                Log.d(TAG, "Timer pos=" + position + ": " + timer);
+                // parse the date and compose a light namme
+                String hour = time.split("T")[1].split("\\.")[0];
+                String lightName = channel > 1 ? "L" + (channel-1)  : "main";
 
-                ImageView i1 = row.findViewById(R.id.imgIcon);
+                ImageView icon = row.findViewById(R.id.imgIcon);
                 TextView title = row.findViewById(R.id.txtTitle);
-                title.setText(name + " => " + hour);
-                if (signal)
-                    i1.setImageResource(R.drawable.bulb_on);
+                title.setText(String.format("H: %s | light: %s", hour, lightName));
+                if (signal > 0)
+                    icon.setImageResource(R.drawable.bulb_on);
                 else
-                    i1.setImageResource(R.drawable.bulb_off);
+                    icon.setImageResource(R.drawable.bulb_off);
 
-            } catch (JSONException e) {
+            } catch (Exception e) {
+                Log.e(TAG, "Error populating listView: " + e);
                 e.printStackTrace();
             }
             return (row);
