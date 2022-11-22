@@ -1,10 +1,10 @@
 package project.van.fionaremote;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,21 +17,59 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import project.van.fionaremote.TimePicker.MyTimePickerDialog;
+
+
+class TimersBTCallback extends BTCallback {
+
+    private static final String TAG = "FionaTimersBTCallback";
+    private final TimerActivity ctx;
+
+        public TimersBTCallback(Context ctx) {
+            super(ctx);
+            this.ctx = (TimerActivity) ctx;
+        }
+
+        @Override
+        public boolean onConnect(@NonNull JSONObject result) {
+            boolean connected = super.onConnect(result);
+            if (connected) {
+                Log.d(TAG, "Fetching pending tasks after successful connection...");
+                this.ctx.requestPendingTasks();
+            }
+            return true;
+        }
+
+        @Override
+        public void onServerStateUpdate(@NonNull JSONObject result) {
+            super.onServerStateUpdate(result);
+            // Fetch scheduled tasks
+            try {
+                boolean isOk = result.getBoolean("ok");
+                if (isOk) {
+                    JSONArray schedules = result.getJSONArray("scheduled");
+                    this.ctx.updateTaskList(schedules);
+                } else {
+                    String notOkReason = result.getString("error");
+                    String msg = "BT Server returned error: " + notOkReason;
+                    Log.e(TAG, msg);
+                    Toast.makeText(this.ctx, msg, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Error reading onServerStateUpdate BTResponse JSON object");
+            }
+        }
+    }
 
 public class TimerActivity extends BaseLayout {
 
@@ -77,7 +115,12 @@ public class TimerActivity extends BaseLayout {
         btClient.close();
     }
 
-    private void callServerSchedule(Integer channel, Boolean switchState, int delay) {
+    protected void requestPendingTasks() {
+        String payload = "{\"cmd\": \"/read\"}";
+        btClient.request(payload, new TimersBTCallback(this));
+    }
+
+    private void scheduleServerTask(Integer channel, Boolean switchState, int delay) {
         try {
             JSONObject payload = new JSONObject();
             payload.put("cmd", "/schedule");
@@ -92,6 +135,10 @@ public class TimerActivity extends BaseLayout {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateTaskList(JSONArray tasks) {
+        Log.d(TAG, "Task to add to list: " + tasks);
     }
 
     public void showPicker() {
@@ -119,7 +166,7 @@ public class TimerActivity extends BaseLayout {
             // send a request to the RaspberryPi
             int delay = hours * 3600 + minutes * 60 + seconds;
             Log.d(TAG , "Total delay: " + delay);
-            callServerSchedule(light, signal, delay);
+            scheduleServerTask(light, signal, delay);
 
 
         }, now.get(Calendar.HOUR_OF_DAY),
@@ -132,11 +179,9 @@ public class TimerActivity extends BaseLayout {
 
     public class CustomAdapter extends BaseAdapter {
 
-        private final Context mContext;
         private final JSONArray timers;
 
         public CustomAdapter(Context context, JSONArray timers) {
-            this.mContext = context;
             this.timers = timers;
             Log.d(TAG, "Timers in CustomAdapter: " + timers);
         }

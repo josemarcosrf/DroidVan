@@ -21,17 +21,51 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+class LightsBTCallback extends BTCallback {
+
+    private static final String TAG = "FionaLightsBTCallback";
+    private final LightSwitchActivity ctx;
+
+        public LightsBTCallback(Context ctx) {
+            super(ctx);
+            this.ctx = (LightSwitchActivity) ctx;
+        }
+
+        @Override
+        public boolean onConnect(@NonNull JSONObject result) {
+            boolean connected = super.onConnect(result);
+            if (connected) {
+                Log.d(TAG, "Fetching lights states after successful connection...");
+                this.ctx.requestLightState(null);
+            }
+            this.ctx.connMsg.setVisibility(connected? View.INVISIBLE : View.VISIBLE);
+            return true;
+        }
+
+        @Override
+        public void onServerStateUpdate(@NonNull JSONObject result) {
+            super.onServerStateUpdate(result);
+            // Fetch light states
+            try {
+                boolean isOk = result.getBoolean("ok");
+                if (isOk) {
+                    Log.d(TAG, "Connection was Ok, now requesting light state...");
+                    this.ctx.updateLightSwitches(result.getJSONArray("state"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 public class LightSwitchActivity extends BaseLayout {
-
-    // TODO: Handle continous attempts to reconnect (or on every click? by BTClient...)
-    // TODO: Become aware of server disconnection
-
     // Activity variables
     private static final String TAG = "FionaManualLight";
-    private TextView connMsg;
     // Bluetooth
     private BTClient btClient;
     // Thread variables
+    protected TextView connMsg;
     ExecutorService executorService = Executors.newFixedThreadPool(4);
     Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
@@ -50,7 +84,8 @@ public class LightSwitchActivity extends BaseLayout {
     @Override
     protected void onResume() {
         super.onResume();
-        btClient.prepareBT(getRPIServerUUID(), new BTCallback(this));
+        btClient.prepareBT(getRPIServerUUID(), new LightsBTCallback(this));
+        setConnMsgVisibility(btClient.isConnected());
     }
 
     @Override
@@ -65,30 +100,22 @@ public class LightSwitchActivity extends BaseLayout {
         return aSwitch.isChecked();
     }
 
-    private void callServerLightState() {
-        String payload = "{\"cmd\": \"/read\"}";
-        btClient.request(payload, new BTCallback(this));
-    }
-
     public void setConnMsgVisibility(boolean visibility) {
         connMsg.setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void callServerSwitch(Integer channel, Boolean switchState) {
+    private void requestLightSwitch(Integer channel, Boolean switchState) {
         String mode = switchState ? "1" : "0";
         String payload = "{\"cmd\": \"/switch\", \"channels\": [" + channel + "], \"mode\": " + mode + "}";
-        btClient.request(payload, new BTCallback(this));
+        btClient.request(payload, new LightsBTCallback(this));
     }
 
     public void updateLightSwitches(@NonNull JSONArray state) {
         Log.d(TAG, "In updateLightSwitches! " + state + " (len: " + state.length() + ")");
-        String lKey = "main";
         for (int i = 0; i < state.length(); i++) {
-            if (i > 0)
-                lKey = "l" + i;
+            String lKey = i > 0 ? "l" + i: "main";
             try {
                 boolean value = state.getInt(i) < 1;
-                Log.d(TAG, lKey + " (bool) ==> " + value);
                 // Move the switches accordingly
                 int resID = getResources().getIdentifier(lKey + "_switch", "id", getPackageName());
                 Switch aSwitch = findViewById(resID);
@@ -99,9 +126,13 @@ public class LightSwitchActivity extends BaseLayout {
             }
         }
     }
-
+    
+    /**
+     * Called when the user presses the 'get light status' button
+     */
     public void requestLightState(View view) {
-        callServerLightState();
+        String payload = "{\"cmd\": \"/read\"}";
+        btClient.request(payload, new LightsBTCallback(this));
     }
 
     /**
@@ -111,7 +142,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.main_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.callServerSwitch(1, switchState);
+        this.requestLightSwitch(1, switchState);
     }
 
     /**
@@ -121,7 +152,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.l1_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.callServerSwitch(2, switchState);
+        this.requestLightSwitch(2, switchState);
     }
 
     /**
@@ -131,7 +162,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.l2_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.callServerSwitch(3, switchState);
+        this.requestLightSwitch(3, switchState);
     }
 
     /**
@@ -141,7 +172,7 @@ public class LightSwitchActivity extends BaseLayout {
         // Get the switch
         Switch aSwitch = findViewById(R.id.l3_switch);
         Boolean switchState = checkToggleState(aSwitch);
-        this.callServerSwitch(4, switchState);
+        this.requestLightSwitch(4, switchState);
     }
 
 }

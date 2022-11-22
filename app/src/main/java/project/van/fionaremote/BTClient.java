@@ -18,22 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.Executor;
 
 
-// The callback interface
-interface BTCallbackInterface {
-
-    void onBTNotEnabled();
-
-    void onConnect(@NonNull JSONObject result);
-
-    void onSwitch(@NonNull JSONObject result);
-
-    void onComplete(JSONObject result);
-}
-
 public class BTClient {
-
-    // TODO: Handle reconnections
-
     // Bluetooth
     private final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     private BluetoothSocket btSocket;
@@ -75,6 +60,12 @@ public class BTClient {
         return result;
     }
 
+    private void notifyResult(JSONObject payload, BTCallback callback) {
+        resultHandler.post(() -> {
+            callback.onMessage(payload);
+        });
+    }
+
     public void prepareBT(UUID serverUUID, BTCallback callback) {
         boolean btFound = findDevice("raspberrypi", callback);
         if (btFound) {
@@ -91,9 +82,7 @@ public class BTClient {
         if (btAdapter == null) {
             throw new RuntimeException("Device doesn't support Bluetooth :(");
         } else if (!btAdapter.isEnabled()) {
-            resultHandler.post(() -> {
-                callback.onBTNotEnabled();
-            });
+            resultHandler.post(callback::onBTNotEnabled);
         }
 
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
@@ -144,19 +133,15 @@ public class BTClient {
         return false;
     }
 
-    private void notifyResult(JSONObject payload, BTCallback callback) {
-        resultHandler.post(() -> {
-            callback.onComplete(payload);
-        });
-    }
-
     private void pairWith(String deviceName, BTCallback callback) {
         executor.execute(() -> {
             try {
-                if (findDevice(deviceName, callback)) {
-                    notifyResult(buildPayload(true, "BT Device found"), callback);
-                } else {
-                    notifyResult(buildPayload(false, "Device not found!"), callback);
+                if (btDevice == null) {
+                    if (findDevice(deviceName, callback)) {
+                        notifyResult(buildPayload(true, "BT Device found"), callback);
+                    } else {
+                        notifyResult(buildPayload(false, "Device not found!"), callback);
+                    }
                 }
             } catch (RuntimeException re) {
                 Log.e(TAG, "Runtime exception while pairing: " + re);
@@ -168,11 +153,13 @@ public class BTClient {
     }
 
     private void send(@NonNull String msg) throws IOException {
+        blockingConnect(this.connUUID);
         OutputStream mmOutputStream = btSocket.getOutputStream();
         mmOutputStream.write(msg.getBytes());
     }
 
     private String receive() throws IOException {
+        blockingConnect(this.connUUID);
         InputStream mmInputStream = btSocket.getInputStream();
         byte[] buffer = new byte[256];
         int bytes = mmInputStream.read(buffer);
@@ -211,7 +198,7 @@ public class BTClient {
                 Log.d(TAG, "Response from BT Server: " + res);
                 JSONObject response_payload = new JSONObject(res);
                 resultHandler.post(() -> {
-                    callback.onSwitch(response_payload);
+                    callback.onServerStateUpdate(response_payload);
                 });
             } catch (IOException e) {
                 String err_msg = "Problems reading from socket: " + e;
@@ -222,6 +209,10 @@ public class BTClient {
                 je.printStackTrace();
             }
         });
+    }
+
+    public boolean isConnected() {
+        return btSocket != null && btSocket.isConnected();
     }
 
     public void close() {
