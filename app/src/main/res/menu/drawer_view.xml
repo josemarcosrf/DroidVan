@@ -12,6 +12,7 @@
             android:id="@+id/light_timers"
             android:icon="@drawable/material_timer"
             android:title="Light timer" />
+        <!--
         <item
             android:id="@+id/light_voice_ctl"
             android:icon="@drawable/material_microphone"
@@ -20,6 +21,7 @@
             android:id="@+id/web_control_pannel"
             android:icon="@drawable/control_panel"
             android:title="Web control panel" />
+        -->
         <item
             android:id="@+id/settings"
             android:icon="@drawable/gear"

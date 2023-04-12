@@ -1,6 +1,8 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,15 +14,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.util.UUID;
+
 public class BaseLayout extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TAG = "PhionaBaseActivity";
-
+    private static final String TAG = "FionaBaseActivity";
     private DrawerLayout mDrawerLayout;
 
     ActionBarDrawerToggle toggle;
-
 
     protected void onCreateDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -42,6 +44,15 @@ public class BaseLayout extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    public UUID getServerUUID() {
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
+        String BtKey = this.getResources().getString(R.string.bt_uuid);
+        String BtServerUUID = this.getResources().getString(R.string.sample_uuid);
+        String uuidStr = sharedPref.getString(BtKey, BtServerUUID);
+        return UUID.fromString(uuidStr);
+    }
+
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -57,16 +68,15 @@ public class BaseLayout extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return true;
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             // action when action_search was selected
-            case R.id.ip_setting:
-                IPDialog diag = new IPDialog(this);
-                diag.show_ip_dialog();
+            case R.id.rpi_settings:
+                ConnectionDialog diag = new ConnectionDialog(this);
+                diag.showConnectionDialog();
                 break;
             default:
                 Toast.makeText(this, "Default option...", Toast.LENGTH_SHORT).show();
@@ -85,28 +95,28 @@ public class BaseLayout extends AppCompatActivity implements
             // https://stackoverflow.com/questions/15359124/resume-the-activity-instead-of-starting-if-already-exists-in-back-stack
 
             case R.id.light_switches:
-                intent = new Intent(this, ManualLightSwitchActivity.class);
-//                finish();
+                intent = new Intent(this, LightSwitchActivity.class);
+                // finish();
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
                 break;
             case R.id.light_timers:
                 intent = new Intent(this, TimerActivity.class);
-//                finish();
+                // finish();
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
                 break;
-            case R.id.light_voice_ctl:
+            /*case R.id.light_voice_ctl:
                 intent = new Intent(this, VoiceLightCtlActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                finish();
+                // finish();
                 this.startActivity(intent);
-                break;
-            case R.id.web_control_pannel:
+                break;*/
+            /*case R.id.web_control_pannel:
                 intent = new Intent(this, WebControlPanelActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 this.startActivity(intent);
-                break;
+                break;*/
             case R.id.settings:
                 Toast.makeText(this, "No settings yet my friend. Ouch!", Toast.LENGTH_SHORT).show();
                 break;

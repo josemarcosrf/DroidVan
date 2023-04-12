@@ -1,38 +1,29 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+public class HTTPClient {
 
-public class RaspVanRequests {
-
-    private static final String TAG = "PhionaRaspVan";
+    private static final String TAG = "FionaRequests";
 
     // Default connection parameters
     private static final String light_endpoint = "/lights";
     private static final String timer_endpoint = "/timer";
     private static RequestQueue requestQueue;       // Connection request queue
-    private SharedPreferences sharedPref;
-    private Context context;
+    private final SharedPreferences sharedPref;
+    private final Context context;
 
 
-    public RaspVanRequests(Context context) {
+    public HTTPClient(Context context) {
         this.context = context;
         String settingsName = context.getResources().getString(R.string.settings_file_key);
 
@@ -49,6 +40,9 @@ public class RaspVanRequests {
      */
     public void getLightsState(Response.Listener<JSONObject> listener) {
 
+        Log.d(TAG, "'getLightsState' not implemented yet!");
+
+        /*
         // Build the endpoint
         String address = getIP();
         String port = getPort();
@@ -65,10 +59,14 @@ public class RaspVanRequests {
         );
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+        */
     }
 
     public void getTimers(Response.Listener<JSONArray> listener) {
 
+        Log.d(TAG, "'getTimers' not implemented yet!");
+
+        /*
         // Build the endpoint
         String address = getIP();
         String port = getPort();
@@ -85,6 +83,7 @@ public class RaspVanRequests {
         );
         // Add the request to the Queue
         requestQueue.add(jsonArrReq);
+        */
     }
 
     /**
@@ -94,6 +93,10 @@ public class RaspVanRequests {
      * @param switchState (Boolean): True to switch ON, False to switch OFF
      */
     public void sendSwitchLightRequest(String lightName, Boolean switchState) {
+
+        Log.d(TAG, "'sendSwitchLightRequest' not implemented yet!");
+
+        /*
         // Build the endpoint
         String address = getIP();
         String port = getPort();
@@ -133,13 +136,15 @@ public class RaspVanRequests {
                 });
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+        */
     }
 
     public void setTimerRequest(String lightName, Boolean signal, Integer seconds) {
 
+        Log.d(TAG, "'setTimerRequest' not implemented yet!");
+        /*
         // Build the endpoint
         String address = getIP();
-        String port = getPort();
         String url = "http://" + address + ":" + port + timer_endpoint;
 
         Log.d(TAG, "Hitting endpoint: " + url);
@@ -161,19 +166,13 @@ public class RaspVanRequests {
         );
         // Add the request to the Queue
         requestQueue.add(jsonObjReq);
+        */
     }
 
-    private String getIP() {
-        String ipKey = context.getResources().getString(R.string.raspvan_ip);
-        String defaultIP = context.getResources().getString(R.string.sample_ip);
-        String address = sharedPref.getString(ipKey, defaultIP);
+    private String getServerUUID() {
+        String BtKey = context.getResources().getString(R.string.bt_uuid);
+        String BtServerUUID = context.getResources().getString(R.string.sample_uuid);
+        String address = sharedPref.getString(BtKey, BtServerUUID);
         return address;
-    }
-
-    private String getPort() {
-        String portKey = context.getResources().getString(R.string.raspvan_port);
-        String defaultPort = context.getResources().getString(R.string.sample_port);
-        String port = sharedPref.getString(portKey, defaultPort);
-        return port;
     }
 }

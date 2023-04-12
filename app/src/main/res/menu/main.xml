@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/ip_setting"
-        android:title="@string/ip_settings" />
+        android:id="@+id/rpi_settings"
+        android:title="@string/conn_settings" />
 </menu>

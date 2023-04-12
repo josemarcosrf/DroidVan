@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 
 import android.app.Activity;
@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -16,7 +15,7 @@ import android.widget.Toast;
 
 public class WebControlPanelActivity extends BaseLayout {
 
-    private static final String TAG = "PhionaWebControlPanel";
+    private static final String TAG = "FionaWebControlPanel";
 
     private SharedPreferences sharedPref;
     private Context context;
@@ -56,13 +55,13 @@ public class WebControlPanelActivity extends BaseLayout {
     }
 
     private String getIP() {
-        String ipKey = this.context.getResources().getString(R.string.raspvan_ip);
-        String defaultIP = this.context.getResources().getString(R.string.sample_ip);
-        String address = this.sharedPref.getString(ipKey, defaultIP);
+        String btKey = this.context.getResources().getString(R.string.bt_uuid);
+        String defaultUUID = this.context.getResources().getString(R.string.sample_uuid);
+        String address = this.sharedPref.getString(btKey, defaultUUID);
         return address;
     }
 
-    private class CustomWebViewClient extends WebViewClient{
+    private class CustomWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
@@ -93,9 +92,9 @@ public class WebControlPanelActivity extends BaseLayout {
         }
 
         @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error){
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
             //Your code to do
-            Toast.makeText(activity, "Your Internet Connection May not be active Or " + error , Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Your Internet Connection May not be active Or " + error, Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,8 +7,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
-import static android.support.v4.content.ContextCompat.startActivity;
-
 /**
  * Gesture Listener class...
  * (Should this be in every Activity to be able to listen to the gestures?)
@@ -16,30 +14,29 @@ import static android.support.v4.content.ContextCompat.startActivity;
 class LearnGesture extends GestureDetector.SimpleOnGestureListener {
 
     // Logging Activity tag
-    private static final String TAG = "PhionaGestureActivity";
+    private static final String TAG = "FionaGestureActivity";
 
     // here just to make Toasts...
-    private Context context;
+    private final Context context;
 
-    public LearnGesture(Context context){
+    public LearnGesture(Context context) {
         this.context = context;
     }
 
     @Override
     public boolean onDown(MotionEvent event) {
-        Log.d(TAG,"onDown: " + event.toString());
+        Log.d(TAG, "onDown: " + event.toString());
         return true;
     }
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-        Log.d(TAG, "Inside onFling.....  e2: " + e2.getX() + " e1: " +  e1.getX());
+        Log.d(TAG, "Inside onFling.....  e2: " + e2.getX() + " e1: " + e1.getX());
 
         if (e2.getX() > e1.getX()) {
             onSwipeRight();
-        }
-        else {
+        } else {
             onOtherSwipe();
         }
         return true;
@@ -48,7 +45,7 @@ class LearnGesture extends GestureDetector.SimpleOnGestureListener {
     public void onSwipeRight() {
         Log.d(TAG, "Inside onSwipeRight....");
         Toast.makeText(context, "The good motion detected...", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(context, ManualLightSwitchActivity.class);
+        Intent intent = new Intent(context, LightSwitchActivity.class);
 //        context.finish();
         context.startActivity(intent);
     }

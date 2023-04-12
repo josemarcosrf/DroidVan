@@ -1,4 +1,4 @@
-package project.van.the.phionaremote.TimePicker;
+package project.van.fionaremote.TimePicker;
 
 
 
@@ -19,8 +19,6 @@ package project.van.the.phionaremote.TimePicker;
  */
 
 
-import java.util.Calendar;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,16 +29,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.widget.Toast;
 
-import project.van.the.phionaremote.TimePicker.TimePicker.OnTimeChangedListener;
-import project.van.the.phionaremote.R;
+import java.util.Calendar;
+
+import project.van.fionaremote.R;
 
 /**
  * A dialog that prompts the user for the time of day using a {@link TimePicker}.
  */
 public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
-        OnTimeChangedListener {
+        TimePicker.OnTimeChangedListener {
 
     /**
      * The callback interface used to indicate the user is done filling in
@@ -49,11 +47,11 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     public interface OnTimeSetListener {
 
         /**
-         * @param signal The ON or OFF state to change the light to
-         * @param light The index of the light to change
-         * @param view The view associated with this listener.
+         * @param signal    The ON or OFF state to change the light to
+         * @param light     The index of the light to change
+         * @param view      The view associated with this listener.
          * @param hourOfDay The hour that was set.
-         * @param minute The minute that was set.
+         * @param minute    The minute that was set.
          */
         void onTimeSet(TimePicker view,
                        boolean signal, int light,
@@ -61,7 +59,7 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     }
 
     // logging TAG
-    private static final String TAG = "PhionaTimePickerDialog";
+    private static final String TAG = "FionaTimePickerDialog";
 
     private static final String HOUR = "hour";
     private static final String MINUTE = "minute";
@@ -81,10 +79,10 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     boolean mIs24HourView;
 
     /**
-     * @param context Parent.
-     * @param callBack How parent is notified.
-     * @param hourOfDay The initial hour.
-     * @param minute The initial minute.
+     * @param context      Parent.
+     * @param callBack     How parent is notified.
+     * @param hourOfDay    The initial hour.
+     * @param minute       The initial minute.
      * @param is24HourView Whether this is a 24 hour view, or AM/PM.
      */
     public MyTimePickerDialog(Context context,
@@ -96,11 +94,11 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
     }
 
     /**
-     * @param context Parent.
-     * @param theme the theme to apply to this dialog
-     * @param callBack How parent is notified.
-     * @param hourOfDay The initial hour.
-     * @param minute The initial minute.
+     * @param context      Parent.
+     * @param theme        the theme to apply to this dialog
+     * @param callBack     How parent is notified.
+     * @param hourOfDay    The initial hour.
+     * @param minute       The initial minute.
      * @param is24HourView Whether this is a 24 hour view, or AM/PM.
      */
     public MyTimePickerDialog(Context context,
@@ -146,8 +144,7 @@ public class MyTimePickerDialog extends AlertDialog implements OnClickListener,
                 mCallback.onTimeSet(mTimePicker, true,
                         mTimePicker.getCurrentLight(), mTimePicker.getCurrentHour(),
                         mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());
-            }
-            else if (which == DialogInterface.BUTTON_NEGATIVE){
+            } else if (which == DialogInterface.BUTTON_NEGATIVE) {
                 mCallback.onTimeSet(mTimePicker, false,
                         mTimePicker.getCurrentLight(), mTimePicker.getCurrentHour(),
                         mTimePicker.getCurrentMinute(), mTimePicker.getCurrentSeconds());

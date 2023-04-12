@@ -1,4 +1,4 @@
-package project.van.the.phionaremote;
+package project.van.fionaremote;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -27,12 +27,12 @@ import java.util.zip.ZipInputStream;
 import ai.snips.platform.SnipsPlatformClient;
 
 
-public class VoiceLightCtlActivity extends BaseLayout  {
+public class VoiceLightCtlActivity extends BaseLayout {
 
     // Logging Activity tag
-    private static final String TAG = "PhionaVoiceLightCtl";
+    private static final String TAG = "FionaVoiceLightCtl";
     private GestureDetectorCompat gestureObject;    // Gesture detector
-    private RaspVanRequests req;
+    private HTTPClient req;
     private Response.Listener<JSONObject> lightsListener;
 
     private File assistantLocation;
@@ -105,7 +105,7 @@ public class VoiceLightCtlActivity extends BaseLayout  {
     }
 
     private SnipsPlatformClient createClient(File assistantLocation) {
-        File assistantDir  = new File(assistantLocation, "assistant");
+        File assistantDir = new File(assistantLocation, "assistant");
 
         final SnipsPlatformClient client =
                 new SnipsPlatformClient.Builder(assistantDir)

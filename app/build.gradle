@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "project.van.the.phionaremote"
+        applicationId "project.van.fionaremote"
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
@@ -26,6 +26,7 @@ android {
             url "https://nexus-repository.snips.ai/repository/snips-maven-releases/"
         }
     }
+    namespace 'project.van.fionaremote'
 }
 
 dependencies {
