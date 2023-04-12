@@ -55,7 +55,7 @@ public class WebControlPanelActivity extends BaseLayout {
     }
 
     private String getIP() {
-        String btKey = this.context.getResources().getString(R.string.rpi_bt_uuid);
+        String btKey = this.context.getResources().getString(R.string.bt_uuid);
         String defaultUUID = this.context.getResources().getString(R.string.sample_uuid);
         String address = this.sharedPref.getString(btKey, defaultUUID);
         return address;

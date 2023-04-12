@@ -3,5 +3,5 @@
 
     <item
         android:id="@+id/rpi_settings"
-        android:title="@string/conn_rpi_settings" />
+        android:title="@string/conn_settings" />
 </menu>

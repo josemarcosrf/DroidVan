@@ -2,14 +2,16 @@
     <string name="app_name">FionaRemote</string>
 
     <!-- App Settings -->
-    <string name="conn_rpi_settings">Raspberry Bluetooth server settings</string>
+    <string name="conn_settings">Bluetooth server settings</string>
     <string name="sample_uuid">616d3aa1-689e-4e71-8fed-09f3c7c4ad91</string>
+    <string name="sample_device_name">raspberry</string>
     <string name="id_confirm">confirm</string>
     <string name="id_cancel">cancel</string>
     <string name="settings_file_key">project.van.fionaremote_settings</string>
 
     <!-- String keys for network parameters -->
-    <string name="rpi_bt_uuid">rpi_bt_uuid</string>
+    <string name="bt_uuid">bt_uuid</string>
+    <string name="bt_device_name">bt_device_name</string>
 
     <!-- Manual Light Switches -->
     <string name="main_light">main light</string>

@@ -67,9 +67,11 @@ public class BTClient {
     }
 
     public void prepareBT(UUID serverUUID, BTCallback callback) {
-        boolean btFound = findDevice("raspberrypi", callback);
+        // TODO: Make the device name configurable as a setting (as the UUID)
+        String deviceName = "jose-N501VW";  //raspberrypi
+        boolean btFound = findDevice(deviceName, callback);
         if (btFound) {
-            pairWith("raspberrypi", callback);
+            pairWith(deviceName, callback);
             connect(serverUUID, callback);
         } else {
             notifyResult(buildPayload(false, "Closing BT connection"), callback);

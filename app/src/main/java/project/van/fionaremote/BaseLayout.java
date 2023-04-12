@@ -44,10 +44,10 @@ public class BaseLayout extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    public UUID getRPIServerUUID() {
+    public UUID getServerUUID() {
         SharedPreferences sharedPref = this.getSharedPreferences(
                 this.getString(R.string.settings_file_key), Context.MODE_PRIVATE);
-        String BtKey = this.getResources().getString(R.string.rpi_bt_uuid);
+        String BtKey = this.getResources().getString(R.string.bt_uuid);
         String BtServerUUID = this.getResources().getString(R.string.sample_uuid);
         String uuidStr = sharedPref.getString(BtKey, BtServerUUID);
         return UUID.fromString(uuidStr);

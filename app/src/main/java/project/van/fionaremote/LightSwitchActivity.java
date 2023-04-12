@@ -84,7 +84,7 @@ public class LightSwitchActivity extends BaseLayout {
     @Override
     protected void onResume() {
         super.onResume();
-        btClient.prepareBT(getRPIServerUUID(), new LightsBTCallback(this));
+        btClient.prepareBT(getServerUUID(), new LightsBTCallback(this));
         setConnMsgVisibility(!btClient.isConnected());
     }
 
@@ -115,10 +115,10 @@ public class LightSwitchActivity extends BaseLayout {
         for (int i = 0; i < state.length(); i++) {
             String lKey = i > 0 ? "l" + i: "main";
             try {
-                boolean value = state.getInt(i) < 1;
                 // Move the switches accordingly
                 int resID = getResources().getIdentifier(lKey + "_switch", "id", getPackageName());
                 Switch aSwitch = findViewById(resID);
+                boolean value = state.getInt(i) > 0;
                 aSwitch.setChecked(value);
             } catch (JSONException e) {
                 Log.e(TAG, "Error looping through light state: " + e);

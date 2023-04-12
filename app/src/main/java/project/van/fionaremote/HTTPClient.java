@@ -169,8 +169,8 @@ public class HTTPClient {
         */
     }
 
-    private String getRPIServerUUID() {
-        String BtKey = context.getResources().getString(R.string.rpi_bt_uuid);
+    private String getServerUUID() {
+        String BtKey = context.getResources().getString(R.string.bt_uuid);
         String BtServerUUID = context.getResources().getString(R.string.sample_uuid);
         String address = sharedPref.getString(BtKey, BtServerUUID);
         return address;
