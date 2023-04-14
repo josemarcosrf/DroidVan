@@ -66,9 +66,8 @@ public class BTClient {
         });
     }
 
-    public void prepareBT(UUID serverUUID, BTCallback callback) {
+    public void prepareBT(String deviceName, UUID serverUUID, BTCallback callback) {
         // TODO: Make the device name configurable as a setting (as the UUID)
-        String deviceName = "jose-N501VW";  //raspberrypi
         boolean btFound = findDevice(deviceName, callback);
         if (btFound) {
             pairWith(deviceName, callback);

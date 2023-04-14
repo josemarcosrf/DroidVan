@@ -106,7 +106,7 @@ public class TimerActivity extends BaseLayout {
     @Override
     protected void onResume() {
         super.onResume();
-        btClient.prepareBT(getServerUUID(), new TimersBTCallback(this));
+        btClient.prepareBT(getBTDeviceName(), getServerUUID(), new TimersBTCallback(this));
     }
 
     @Override
